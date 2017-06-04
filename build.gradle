@@ -12,7 +12,9 @@ repositories {
 }
 
 dependencies {
-    compile("com.github.ev3dev-lang-java:ev3dev-lang-java:v0.5.0")
+    compile("ch.qos.logback:logback-classic:1.2.3")
+    compile("com.github.ev3dev-lang-java:ev3dev-lang-java:v0.6.0-RELEASE")
+    compile("com.github.ev3dev-lang-java:lejos-navigation:v0.1.0")
 }
 
 //Compile
