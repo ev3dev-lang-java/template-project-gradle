@@ -1,6 +1,8 @@
 package examples;
 
 import ev3dev.actuators.lego.motors.EV3LargeRegulatedMotor;
+import ev3dev.sensors.Battery;
+import ev3dev.sensors.Button;
 import lejos.hardware.port.MotorPort;
 import lejos.utility.Delay;
 
@@ -24,5 +26,10 @@ public class MyFirstRobot {
         mA.stop();
         mB.stop();
         System.out.println("Stopped motors");
+
+        System.out.println(Battery.getInstance().getVoltage());
+
+        Button.waitForAnyPress();
+
     }
 }

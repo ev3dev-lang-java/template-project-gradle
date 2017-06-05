@@ -38,5 +38,6 @@ You can the Java IDE to launch the task or execute them from the terminal
 
 In order to modify the example, current APIs are:
 
-http://ev3dev-lang-java.github.io/docs/api/v0.5.0/index.html
+http://ev3dev-lang-java.github.io/docs/api/latest/index.html
+
 
