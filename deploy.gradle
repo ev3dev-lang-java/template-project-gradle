@@ -1,3 +1,11 @@
+remotes {
+    ev3dev {
+        host = '192.168.2.2'
+        user = 'robot'
+        password = 'maker'
+    }
+}
+
 
 task testConnection << {
     ssh.run {
