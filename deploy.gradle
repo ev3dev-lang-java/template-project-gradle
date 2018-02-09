@@ -1,3 +1,6 @@
+ssh.settings {
+    knownHosts = allowAnyHosts
+}
 
 task testConnection << {
     ssh.run {
