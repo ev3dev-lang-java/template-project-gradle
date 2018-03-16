@@ -58,3 +58,13 @@ task deployAndProfilingRun << {
 deployAndProfilingRun.dependsOn deploy, remoteProfilingRun
 
 apply from: 'config.gradle'
+
+//Organize tasks in a Group
+def groupName = "ev3dev-lang-java"
+testConnection.group = groupName
+deploy.group = groupName
+remoteRun.group = groupName
+remoteSudoRun.group = groupName
+remoteProfilingRun.group = groupName
+deployAndRun.group = groupName
+deployAndProfilingRun.group = groupName
