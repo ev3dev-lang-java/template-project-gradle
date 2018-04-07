@@ -9,8 +9,8 @@ So, this project try to reduce the curve of learning of any new user with `EV3De
 
 The Prerequisites to use this project are:
 
-- Your MINDSTORMS Brick needs to have installed latest Stable Debian Jessie` version.`http://www.ev3dev.org/downloads/
-- Your MINDSTORMS Brick needs to have installed Oracle Java JRE 8. http://ev3dev-lang-java.github.io/docs/support/getting_started/brick.html 
+- Your MINDSTORMS Brick needs to have installed latest Stable Debian Jessie` version. http://www.ev3dev.org/downloads/
+- Your MINDSTORMS Brick needs to have installed `Oracle Java JRE 8`. http://ev3dev-lang-java.github.io/docs/support/getting_started/brick.html 
 - Your MINDSTORMS Brick needs to be connected to the same LAN than your laptop. http://www.ev3dev.org/docs/getting-started/#step-5-set-up-a-network-connection
 
 Once you have all steps done, continue with the next section.
