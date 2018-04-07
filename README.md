@@ -15,7 +15,7 @@ an example ready to be deployed on your Robot using the `core` library from `EV3
 
 The project includes some tasks to reduce the time to deploy on your robot.
 
-Review the IP of your Brick and update the file `deploy.gradle`:
+Review the IP of your Brick and update the file `./gradle/deploy.gradle`:
 
 ```
 remotes {
