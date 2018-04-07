@@ -5,6 +5,16 @@
 Test a new technology is always a bit tedious and it requires an amount of time. 
 So, this project try to reduce the curve of learning of any new user with `EV3Dev-lang-java`.
 
+## Prerequisites
+
+The Prerequisites to use this project are:
+
+- Your MINDSTORMS Brick needs to have installed latest `Stable Debian Jessie` version. http://www.ev3dev.org/downloads/
+- Your MINDSTORMS Brick needs to have installed `Oracle Java JRE 8`. http://ev3dev-lang-java.github.io/docs/support/getting_started/brick.html 
+- Your MINDSTORMS Brick needs to be connected to the same LAN than your laptop. http://www.ev3dev.org/docs/getting-started/#step-5-set-up-a-network-connection
+
+Once you have all steps done, continue with the next section.
+
 ## Getting Started
 
 This repository stores a template project about `EV3Dev-lang-java`. 
@@ -27,10 +37,11 @@ remotes {
 }
 ```
 
-The tasks associated to deploy on your robot are:
+The tasks associated to deploy on your Robot are:
 
+- testConnection (Test the connection with your Brick)
 - deploy (The project deliver a FatJar to your Brick)
-- remoteRun (Ejecute a jar deployed on your Brick)
+- remoteRun (Execute a Jar deployed on your Brick)
 - deployAndRun (Deploy & Execute from your Computer the program that you configured on the file: MANIFEST.MF)
 
 You can use the Java IDE to launch the task or execute them from the terminal
