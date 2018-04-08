@@ -1,4 +1,4 @@
-package examples;
+package example;
 
 import ev3dev.actuators.lego.motors.EV3LargeRegulatedMotor;
 import ev3dev.sensors.Battery;

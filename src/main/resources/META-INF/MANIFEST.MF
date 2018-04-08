@@ -2,6 +2,7 @@ Manifest-Version: 1.0
 Implementation-Title: EV3Dev-lang-java // Template project
 Implementation-Version: 0.2.0
 Implementation-Vendor: Juan Antonio Breña Moral
-Main-Class: examples.MyFirstRobot
+Main-Class: example.MyFirstRobot
+
 
 
