@@ -14,7 +14,6 @@ repositories {
 dependencies {
     compile("ch.qos.logback:logback-classic:1.2.3")
     compile("com.github.ev3dev-lang-java:ev3dev-lang-java:2.1.0-SNAPSHOT")
-    compile("com.github.ev3dev-lang-java:lejos-navigation:0.2.0")
 
     //Used in one example to play music from an Internet Radio Station
     compile("javazoom:jlayer:1.0.1")
