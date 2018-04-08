@@ -6,8 +6,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This example explain how to use the internal sensor to check
- * the battery level.
+ * Any robot require energy to run.
+ * EV3 Brick receive the energy from 2 alternatives:
+ *
+ * - 6x AA batteries
+ * - EV3 Rechargeable DC Battery 45501
+ *
+ * This example explains how to use the sensor to check the Battery level.
+ *
  */
 public class BatteryExample {
 
