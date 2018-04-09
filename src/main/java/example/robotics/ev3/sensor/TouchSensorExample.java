@@ -5,8 +5,12 @@ import ev3dev.sensors.ev3.EV3TouchSensor;
 import lejos.hardware.port.SensorPort;
 import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class TouchSensorDemo {
+public class TouchSensorExample {
+
+	public static Logger LOGGER = LoggerFactory.getLogger(TouchSensorExample.class);
 
 	//Robot Configuration
 	private static EV3TouchSensor touch1 = new EV3TouchSensor(SensorPort.S1);
@@ -27,14 +31,13 @@ public class TouchSensorDemo {
             sp.fetchSample(sample, 0);
             touchValue = (int)sample[0];
 
-			System.out.println("Iteration: " + i);
-			System.out.println("Touch: " + touchValue);
-            
-            Delay.msDelay(HALF_SECOND);
+			LOGGER.info("Iteration: {}, Touch: {}", i, touchValue);
+
+			Delay.msDelay(HALF_SECOND);
         }
 
-        System.out.println(Battery.getInstance().getVoltage());
-		
+		LOGGER.info("Battery voltage: {}", Battery.getInstance().getVoltage());
+
 	}
 
 }

@@ -1,11 +1,16 @@
 package example.robotics.ev3.sensor;
 
+import ev3dev.sensors.Battery;
 import ev3dev.sensors.ev3.EV3UltrasonicSensor;
 import lejos.hardware.port.SensorPort;
 import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class USSensorDemo {
+public class USSensorExample {
+
+	public static Logger LOGGER = LoggerFactory.getLogger(USSensorExample.class);
 
 	private static EV3UltrasonicSensor us1 = new EV3UltrasonicSensor(SensorPort.S1);
 
@@ -21,11 +26,13 @@ public class USSensorDemo {
             sp.fetchSample(sample, 0);
             distanceValue = (int)sample[0];
 
-			System.out.println("Iteration: " + i + ", Distance: " + distanceValue);
+			LOGGER.info("Iteration: {}, Distance: {}", i, distanceValue);
 
 			Delay.msDelay(500);
         }
-		
+
+		LOGGER.info("Battery voltage: {}", Battery.getInstance().getVoltage());
+
 	}
 
 }

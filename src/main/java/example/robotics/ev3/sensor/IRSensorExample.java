@@ -5,16 +5,18 @@ import ev3dev.sensors.ev3.EV3IRSensor;
 import lejos.hardware.port.SensorPort;
 import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class IRSensorDemo {
+public class IRSensorExample {
+
+	public static Logger LOGGER = LoggerFactory.getLogger(IRSensorExample.class);
 
 	private static EV3IRSensor ir1 = new EV3IRSensor(SensorPort.S1);
 
 	private static int HALF_SECOND = 500;
 	
 	public static void main(String[] args) {
-
-		System.out.println(Battery.getInstance().getVoltage());
 
 		final SampleProvider sp = ir1.getDistanceMode();
 		int distanceValue = 0;
@@ -27,14 +29,13 @@ public class IRSensorDemo {
 		    sp.fetchSample(sample, 0);
 		    distanceValue = (int)sample[0];
 
-			System.out.println("Iteration: " + i + ", Distance: " + distanceValue);
+            LOGGER.info("Iteration: {}, Distance: {}", i, distanceValue);
 
 		    Delay.msDelay(HALF_SECOND);
 		}
 
-		System.out.println(Battery.getInstance().getVoltage());
+        LOGGER.info("Battery voltage: {}", Battery.getInstance().getVoltage());
 
-		
 	}
 
 }
