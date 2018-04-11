@@ -1,18 +1,19 @@
 package example.robotics.ev3.actuator;
 
 import ev3dev.actuators.Sound;
-import ev3dev.utils.JarResource;
 import lejos.utility.Delay;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 
-public class SoundDemo {
+public class PlayTonesExample {
+
+	public static Logger LOGGER = LoggerFactory.getLogger(PlayTonesExample.class);
 
 	//Configuration
 	private static int MAX_VOLUME = 100;
-	private static String filePath = "nod_low_power.wav";
-    private final static int ONE_SECOND = 1000;
+	private final static int ONE_SECOND = 1000;
 	
     private static final int FREQ1	= 300;
     private static final int FREQ2 = 400;
@@ -20,16 +21,12 @@ public class SoundDemo {
     
 	public static void main(String[] args) throws IOException {
 
-		System.out.println("Sound example");
+		LOGGER.info("Play sound tones");
 
 		Sound sound = Sound.getInstance();
-		
-		sound.setVolume(MAX_VOLUME);
-		System.out.println("Volume: " + sound.getVolume());
 
-		JarResource.export(filePath);
-		File file = new File(filePath);
-		sound.playSample(file);
+		sound.setVolume(MAX_VOLUME);
+		LOGGER.info("Volume: {}", sound.getVolume());
 
 		sound.beep();
 		sound.twoBeeps();

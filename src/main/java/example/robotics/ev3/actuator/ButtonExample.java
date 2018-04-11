@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This example show how to use the EV3 Buttons
+ * This Example show how to use the EV3 Buttons
  */
 public class ButtonExample {
 

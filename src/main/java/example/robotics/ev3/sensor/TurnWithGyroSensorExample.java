@@ -12,10 +12,8 @@ public class TurnWithGyroSensorExample {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TurnWithGyroSensorExample.class);
 
-	//Robot Configuration
 	private static EV3GyroSensor gyroSensor = new EV3GyroSensor(SensorPort.S1);
 
-	//Configuration
 	private static int HALF_SECOND = 500;
 	private static int LOOP_LIMIT = 100;
 
