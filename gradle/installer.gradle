@@ -1,0 +1,39 @@
+ssh.settings {
+    knownHosts = allowAnyHosts
+}
+
+task getInstaller << {
+    ssh.run {
+        session(remotes.ev3dev) {
+            println "cd /home/robot"
+            execute "cd /home/robot"
+            println "mkdir installer"
+            execute "mkdir installer"
+            println "cd installer"
+            execute "cd installer"
+            println "wget -N https://raw.githubusercontent.com/ev3dev-lang-java/installer/develop/installer.sh"
+            execute "wget -N https://raw.githubusercontent.com/ev3dev-lang-java/installer/develop/installer.sh"
+            println "chmod +x installer.sh"
+            execute "chmod +x installer.sh"
+            println "./installer.sh help"
+            execute "./installer.sh help"
+        }
+    }
+}
+
+
+task installJava << {
+    ssh.run {
+        session(remotes.ev3dev) {
+            println "echo -e \"maker\" | sudo -S /home/robot/installer/installer.sh"
+            execute "echo -e \"maker\" | sudo -S /home/robot/installer/installer.sh"
+        }
+    }
+}
+
+apply from: './config.gradle'
+
+//Organize tasks in a Group
+def groupName = "ev3dev-lang-java-installer"
+getInstaller.group = groupName
+installJava.group = groupName
