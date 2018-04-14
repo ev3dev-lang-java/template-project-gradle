@@ -16,8 +16,8 @@ task deploy << {
         session(remotes.ev3dev) {
             println "scp " + "${rootProject.name}" + "-all-" + version + ".jar " +  remotes.ev3dev.user + "@" + remotes.ev3dev.host + ":/home/robot"
             put from: "./build/libs/" + "${rootProject.name}" + "-all-" + version + ".jar", into: "/home/robot/"
-            execute "java -jar " + "${rootProject.name}" + "-all-" + version + ".jar > launchJava.sh"
-            execute "chmod +x ./launchJava.sh"
+            execute "java -jar " + "${rootProject.name}" + "-all-" + version + ".jar > /home/robot/launchJava.sh"
+            execute "chmod +x /home/robot/launchJava.sh"
         }
     }
 }
