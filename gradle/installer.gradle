@@ -5,22 +5,26 @@ ssh.settings {
 task getInstaller << {
     ssh.run {
         session(remotes.ev3dev) {
-            println "cd /home/robot"
-            execute "cd /home/robot"
-            println "mkdir installer"
-            execute "mkdir installer"
-            println "cd installer"
-            execute "cd installer"
-            println "wget -N https://raw.githubusercontent.com/ev3dev-lang-java/installer/develop/installer.sh"
-            execute "wget -N https://raw.githubusercontent.com/ev3dev-lang-java/installer/develop/installer.sh"
-            println "chmod +x installer.sh"
-            execute "chmod +x installer.sh"
-            println "./installer.sh help"
-            execute "./installer.sh help"
+            println "mkdir /home/robot/installer"
+            execute "mkdir /home/robot/installer"
+            println "wget -N https://raw.githubusercontent.com/ev3dev-lang-java/installer/develop/installer.sh -P /home/robot/installer"
+            execute "wget -N https://raw.githubusercontent.com/ev3dev-lang-java/installer/develop/installer.sh -P /home/robot/installer"
+            println "chmod +x /home/robot/installer/installer.sh"
+            execute "chmod +x /home/robot/installer/installer.sh"
+            println "/home/robot/installer/installer.sh help"
+            execute "/home/robot/installer/installer.sh help"
         }
     }
 }
 
+task help << {
+    ssh.run {
+        session(remotes.ev3dev) {
+            println "/home/robot/installer/installer.sh help"
+            execute "/home/robot/installer/installer.sh help"
+        }
+    }
+}
 
 task installJava << {
     ssh.run {
@@ -36,4 +40,5 @@ apply from: './config.gradle'
 //Organize tasks in a Group
 def groupName = "ev3dev-lang-java-installer"
 getInstaller.group = groupName
+help.group = groupName
 installJava.group = groupName
