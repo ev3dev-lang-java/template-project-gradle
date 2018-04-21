@@ -32,23 +32,25 @@ public class LEDPatternsExample {
         led.setPattern(3);
         Delay.msDelay(1000);
         led.setPattern(0);
+        Delay.msDelay(1000);
     }
 
     public static void rightPatterns(){
 
         LOGGER.info("Right patterns");
 
-        LED led2 = new EV3Led(EV3Led.RIGHT);
+        LED led = new EV3Led(EV3Led.RIGHT);
 
-        led2.setPattern(0);
+        led.setPattern(0);
         Delay.msDelay(1000);
-        led2.setPattern(1);
+        led.setPattern(1);
         Delay.msDelay(1000);
-        led2.setPattern(2);
+        led.setPattern(2);
         Delay.msDelay(1000);
-        led2.setPattern(3);
+        led.setPattern(3);
         Delay.msDelay(1000);
-        led2.setPattern(0);
+        led.setPattern(0);
+        Delay.msDelay(1000);
 
     }
 

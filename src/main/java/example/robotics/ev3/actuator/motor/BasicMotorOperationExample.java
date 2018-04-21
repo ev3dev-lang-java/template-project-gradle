@@ -32,7 +32,7 @@ class BasicMotorOperationExample {
 
         LOGGER.info("Backward");
         mA.backward();
-        System.out.println("Large Motor is moving: " + mA.isMoving() + " at speed {}" + mA.getSpeed());
+        LOGGER.info("Large Motor is moving: {}, at speed {}", mA.isMoving(), mA.getSpeed());
         Delay.msDelay(2000);
 
         LOGGER.info("Stop");
