@@ -13,13 +13,13 @@ task wrapper(type: Wrapper) {
 }
 
 repositories {
-    mavenCentral()
     maven { url "https://jitpack.io" }
+    mavenCentral()
 }
 
 dependencies {
     compile("ch.qos.logback:logback-classic:1.2.3")
-    compile("com.github.ev3dev-lang-java:ev3dev-lang-java:0.7.0")
+    compile("com.github.ev3dev-lang-java:ev3dev-lang-java:2.2.3")
 }
 
 //Compile
