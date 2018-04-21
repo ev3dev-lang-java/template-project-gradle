@@ -19,7 +19,7 @@ public class TurnWithGyroSensorExample {
 
 	public static void main(String[] args) {
 
-		final SampleProvider sp = gyroSensor.getAngleAndRateMode();
+		final SampleProvider sp = gyroSensor.getAngleMode();
 		int value = 0;
 
 		int iterationCounter = 0;
@@ -31,7 +31,7 @@ public class TurnWithGyroSensorExample {
             sp.fetchSample(sample, 0);
             value = (int)sample[0];
 
-			LOGGER.info("Gyro angle/rate: {}", value);
+			LOGGER.info("Gyro angle: {}", value);
 
 			if(value >= 90){
 				Sound.getInstance().beep();
