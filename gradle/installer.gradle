@@ -37,6 +37,15 @@ task installJava << {
     }
 }
 
+task javaVersion << {
+    ssh.run {
+        session(remotes.ev3dev) {
+            println "java -version"
+            execute "java -version"
+        }
+    }
+}
+
 apply from: './config.gradle'
 
 //Organize tasks in a Group
@@ -44,3 +53,4 @@ def groupName = "ev3dev-lang-java-installer"
 getInstaller.group = groupName
 help.group = groupName
 installJava.group = groupName
+javaVersion.group = groupName
