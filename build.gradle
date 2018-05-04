@@ -22,6 +22,8 @@ dependencies {
     compile("com.github.ev3dev-lang-java:ev3dev-lang-java:2.3.0")
 }
 
+compileJava.options.encoding = 'UTF-8'
+
 //Compile
 compileJava {
     sourceCompatibility = 1.8

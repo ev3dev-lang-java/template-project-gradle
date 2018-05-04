@@ -19,6 +19,7 @@ public class TurnWithGyroSensorExample {
 
 	public static void main(String[] args) {
 
+		gyroSensor.reset();
 		final SampleProvider sp = gyroSensor.getAngleMode();
 		int value = 0;
 
@@ -42,7 +43,7 @@ public class TurnWithGyroSensorExample {
 			//Avoid an infinite loop
 			iterationCounter++;
 			if (iterationCounter >= LOOP_LIMIT) {
-				LOGGER.debug("Breaking the loop if you didn´t rotate in 100 iterations");
+				LOGGER.debug("Breaking the loop if you didn't rotate in 100 iterations");
 				break;
 			}
 
