@@ -29,7 +29,7 @@ public class TouchSensorExample {
 
         	float [] sample = new float[sp.sampleSize()];
             sp.fetchSample(sample, 0);
-            touchValue = (int)sample[0];
+            touchValue = (int) sample[0];
 
 			LOGGER.info("Iteration: {}, Touch: {}", i, touchValue);
 

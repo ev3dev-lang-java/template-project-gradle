@@ -24,7 +24,7 @@ public class USSensorExample {
 
         	float [] sample = new float[sp.sampleSize()];
             sp.fetchSample(sample, 0);
-            distanceValue = (int)sample[0];
+            distanceValue = (int) sample[0];
 
 			LOGGER.info("Iteration: {}, Distance: {}", i, distanceValue);
 
