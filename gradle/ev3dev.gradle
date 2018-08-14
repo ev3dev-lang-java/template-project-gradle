@@ -81,6 +81,17 @@ task restartBrickman << {
     }
 }
 
+task getDebianDistro << {
+    ssh.run {
+        session(remotes.ev3dev) {
+            println "cat /etc/os-release"
+            execute "cat /etc/os-release"
+        }
+    }
+}
+
+
+
 //Organize tasks in a Group
 def groupName = "ev3dev"
 stopBluetooth.group = groupName
@@ -91,3 +102,4 @@ stopNmbd.group = groupName
 restartNmbd.group = groupName
 stopBrickman.group = groupName
 restartBrickman.group = groupName
+getDebianDistro.group = groupName
