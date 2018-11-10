@@ -9,7 +9,7 @@ So, this project try to reduce the curve of learning of any new user with `EV3De
 
 The Prerequisites to use this project are:
 
-- Your MINDSTORMS Brick needs to have installed latest `Snapshot Debian Stretch` version. https://oss.jfrog.org/list/oss-snapshot-local/org/ev3dev/brickstrap/
+- Your MINDSTORMS Brick needs to have installed latest `Debian Stretch` version. https://www.ev3dev.org/docs/getting-started/
 - Your MINDSTORMS Brick needs to be connected to the same LAN than your laptop. http://www.ev3dev.org/docs/getting-started/#step-5-set-up-a-network-connection
 
 Once you have all steps done, continue with the next section.
@@ -36,26 +36,64 @@ remotes {
 }
 ```
 
+## Gradle Tasks
+
+
+The project has some tasks developed to interact in 3 areas:
+
+- EV3Dev-lang-java
+- EV3Dev
+- Installer
+
+### EV3Dev-lang-java
 The tasks associated to deploy on your Robot are:
 
 - testConnection (Test the connection with your Brick)
 - deploy (The project deliver a FatJar to your Brick)
 - remoteRun (Execute a Jar deployed on your Brick)
 - deployAndRun (Deploy & Execute from your Computer the program that you configured on the file: MANIFEST.MF)
+- ev3devInfo (Get technical information about your EV3 Brick)
+- removePreviousJar (Remove current jar remotely)
+- remoteBrickRun (If your program is going to use some EV3 Actuator like LCD, Buttons, use this task to execute the program)
+- remoteRun (Execute your jar remotely)
+- remoteRunClassVerbose (Execute your jar and show JVM info)
+- remoteProfilingRun (Execute your jar configured for Profiling activities)
+- deployAndBrickRun (Deploy & Execute your program with Brickrun)
+- deployAndProfilingRun  (Deploy & Execute your jar configured for Profiling activities)
+- pkillJava (Kill Java processes in your Brick)
+
 
 You can use the Java IDE to launch the task or execute them from the terminal
 
 ```
-./gradlew deployAndRun
+./gradlew deployAndBrickRun
 ```
 
-# Modify the example
+### EV3Dev
 
-In order to modify the example, current APIs are:
+- stopBluetooth (Stop bluetooth support)
+- restartBluetooth (Restart bluetooth)
+- stopNtp (Stop NTP)
+- restartNtp (Restart NTP)
+- stopBrickman (Stop Brickman)
+- restartBrickman (Restart Brickman)
+- free (Get information about Brick memory)
+- ps (Get information about processes running)
+
+### Installer
+
+- getInstaller (Get Installer)
+- help (Call help info from Installer)
+- installJava (Install java)
+- javaVersion (Show current java version running)
+
+## Javadocs
+
+The project has the following technical documentation
 
 http://ev3dev-lang-java.github.io/docs/api/latest/index.html
 
-# Examples
+## Examples
 
 Exist several examples ready to use here:
 
