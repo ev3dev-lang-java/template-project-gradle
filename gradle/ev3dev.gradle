@@ -91,6 +91,28 @@ task getDebianDistro << {
 }
 
 
+task free {
+    doLast {
+        ssh.run {
+            session(remotes.ev3dev) {
+                println "free "
+                execute "free "
+            }
+        }
+    }
+}
+
+task ps {
+    doLast {
+        ssh.run {
+            session(remotes.ev3dev) {
+                println "ps "
+                execute "ps aux | sort -n -k 4 "
+            }
+        }
+    }
+}
+
 
 //Organize tasks in a Group
 def groupName = "ev3dev"
@@ -103,3 +125,5 @@ restartNmbd.group = groupName
 stopBrickman.group = groupName
 restartBrickman.group = groupName
 getDebianDistro.group = groupName
+free.group = groupName
+ps.group = groupName

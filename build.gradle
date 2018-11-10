@@ -19,7 +19,8 @@ repositories {
 
 dependencies {
     compile("ch.qos.logback:logback-classic:1.2.3")
-    compile("com.github.ev3dev-lang-java:ev3dev-lang-java:2.4.6-SNAPSHOT")
+    compile("com.github.ev3dev-lang-java:ev3dev-lang-java:2.4.12-SNAPSHOT")
+    //compile("com.github.ev3dev-lang-java:ev3dev-lang-java:0.7.0") // BrickPi3/PiStorms support
 }
 
 compileJava.options.encoding = 'UTF-8'
