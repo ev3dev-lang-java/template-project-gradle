@@ -6,15 +6,24 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
+//Wrapper
+task wrapper(type: Wrapper) {
+    description = 'Generates gradlew[.bat] scripts'
+    gradleVersion = '4.7'
+}
+
 repositories {
-    mavenCentral()
     maven { url "https://jitpack.io" }
+    mavenCentral()
 }
 
 dependencies {
     compile("ch.qos.logback:logback-classic:1.2.3")
-    compile("com.github.ev3dev-lang-java:ev3dev-lang-java:0.7.0")
+    compile("com.github.ev3dev-lang-java:ev3dev-lang-java:2.4.12-SNAPSHOT")
+    //compile("com.github.ev3dev-lang-java:ev3dev-lang-java:0.7.0") // BrickPi3/PiStorms support
 }
+
+compileJava.options.encoding = 'UTF-8'
 
 //Compile
 compileJava {
@@ -54,3 +63,5 @@ buildscript {
 apply plugin: 'org.hidetake.ssh'
 
 apply from: './gradle/deploy.gradle'
+apply from: './gradle/ev3dev.gradle'
+apply from: './gradle/installer.gradle'
