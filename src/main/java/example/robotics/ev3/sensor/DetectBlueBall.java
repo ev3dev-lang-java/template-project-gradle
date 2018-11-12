@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 public class DetectBlueBall {
 
-	public static Logger LOGGER = LoggerFactory.getLogger(IRSensorExample.class);
+	public static Logger LOGGER = LoggerFactory.getLogger(DetectBlueBall.class);
 
 	private static EV3ColorSensor color1 = new EV3ColorSensor(SensorPort.S1);
 	
