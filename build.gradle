@@ -1,6 +1,17 @@
 //Gradle file library ev3dev-lang-java // Template project
 
-version = '2.4.16'
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.0'
+        classpath "gradle.plugin.net.ossindex:ossindex-gradle-plugin:0.1.1"
+    }
+}
+
+version = '2.4.17'
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
@@ -40,14 +51,15 @@ jar {
 }
 
 //Fat Jar
-task fatJar(type: Jar) {
-    baseName = "${rootProject.name}" + "-all"
-    manifest {
-        from file("${projectDir}/src/main/resources/META-INF/MANIFEST.MF")
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: "net.ossindex.audit"
+
+task fatJar {
+    doLast {
+
     }
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
 }
+fatJar.dependsOn shadowJar
 
 //Deploy on Brick
 buildscript {
