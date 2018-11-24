@@ -107,3 +107,9 @@ http://ev3dev-lang-java.github.io/docs/api/latest/index.html
 Exist several examples ready to use here:
 
 https://github.com/ev3dev-lang-java/examples
+
+## Issues
+
+If you have any problem or doubt, use the main projet.
+
+https://github.com/ev3dev-lang-java/ev3dev-lang-java/issues
