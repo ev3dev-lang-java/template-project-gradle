@@ -113,6 +113,25 @@ task ps {
     }
 }
 
+task shutdown << {
+    ssh.run {
+        session(remotes.ev3dev) {
+            println "echo -e \"maker\" | sudo -S sudo shutdown -h now"
+            execute "echo -e \"maker\" | sudo -S sudo shutdown -h now"
+        }
+    }
+}
+
+task ev3devInfo {
+    doLast {
+        ssh.run {
+            session(remotes.ev3dev) {
+                println "ev3dev-sysinfo -m"
+                execute "ev3dev-sysinfo -m"
+            }
+        }
+    }
+}
 
 //Organize tasks in a Group
 def groupName = "ev3dev"
@@ -127,3 +146,5 @@ restartBrickman.group = groupName
 getDebianDistro.group = groupName
 free.group = groupName
 ps.group = groupName
+shutdown.group = groupName
+ev3devInfo.group = groupName

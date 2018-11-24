@@ -13,16 +13,7 @@ task testConnection {
     }
 }
 
-task ev3devInfo {
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                println "ev3dev-sysinfo -m"
-                execute "ev3dev-sysinfo -m"
-            }
-        }
-    }
-}
+
 
 task pkillJava {
     doLast {
@@ -159,7 +150,6 @@ apply from: './config.gradle'
 //Organize tasks in a Group
 def groupName = "ev3dev-lang-java"
 testConnection.group = groupName
-ev3devInfo.group = groupName
 removePreviousJar.group = groupName
 deploy.group = groupName
 remoteBrickRun.group = groupName
