@@ -52,4 +52,21 @@ task javaVersion {
     }
 }
 
+task installLibraries {
+    group installerGroup
+    doLast {
+        ssh.run {
+            session(remotes.ev3dev) {
+                sshPrint(delegate, "rm -rf ${project.externalJarsPath}")
+                sshPrint(delegate, "mkdir -p ${project.externalJarsPath}/")
+                configurations.runtime.each {
+                    println "Uploading: ${it.name}"
+                    delegate.put from: it.path, into: "${project.externalJarsPath}"
+                }
+            }
+        }
+    }
+}
+
+
 apply from: './config.gradle'
