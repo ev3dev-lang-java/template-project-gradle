@@ -66,11 +66,9 @@ apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: "net.ossindex.audit"
 
 task fatJar {
-    doLast {
-
-    }
+    dependsOn shadowJar
+    doLast {}
 }
-fatJar.dependsOn shadowJar
 
 apply plugin: 'org.hidetake.ssh'
 apply from: './gradle/deploy.gradle'

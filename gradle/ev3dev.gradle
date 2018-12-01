@@ -1,4 +1,7 @@
+def ev3devGroup = "Ev3dev management"
+
 task stopBluetooth << {
+    group ev3devGroup
     ssh.run {
         session(remotes.ev3dev) {
             sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl stop bluetooth")
@@ -7,6 +10,7 @@ task stopBluetooth << {
 }
 
 task restartBluetooth << {
+    group ev3devGroup
     ssh.run {
         session(remotes.ev3dev) {
             sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl restart bluetooth")
@@ -15,6 +19,7 @@ task restartBluetooth << {
 }
 
 task stopNtp << {
+    group ev3devGroup
     ssh.run {
         session(remotes.ev3dev) {
             sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl stop ntp")
@@ -23,6 +28,7 @@ task stopNtp << {
 }
 
 task restartNtp << {
+    group ev3devGroup
     ssh.run {
         session(remotes.ev3dev) {
             sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl restart ntp")
@@ -32,6 +38,7 @@ task restartNtp << {
 
 
 task stopNmbd << {
+    group ev3devGroup
     ssh.run {
         session(remotes.ev3dev) {
             sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl stop nmbd")
@@ -40,6 +47,7 @@ task stopNmbd << {
 }
 
 task restartNmbd << {
+    group ev3devGroup
     ssh.run {
         session(remotes.ev3dev) {
             sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl restart nmbd")
@@ -49,6 +57,7 @@ task restartNmbd << {
 
 
 task stopBrickman << {
+    group ev3devGroup
     ssh.run {
         session(remotes.ev3dev) {
             sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl stop brickman")
@@ -57,6 +66,7 @@ task stopBrickman << {
 }
 
 task restartBrickman << {
+    group ev3devGroup
     ssh.run {
         session(remotes.ev3dev) {
             sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl restart brickman")
@@ -65,6 +75,7 @@ task restartBrickman << {
 }
 
 task getDebianDistro << {
+    group ev3devGroup
     ssh.run {
         session(remotes.ev3dev) {
             sshPrint(delegate, "cat /etc/os-release")
@@ -74,6 +85,7 @@ task getDebianDistro << {
 
 
 task free {
+    group ev3devGroup
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
@@ -84,6 +96,7 @@ task free {
 }
 
 task ps {
+    group ev3devGroup
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
@@ -94,6 +107,7 @@ task ps {
 }
 
 task shutdown << {
+    group ev3devGroup
     ssh.run {
         session(remotes.ev3dev) {
             sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo shutdown -h now")
@@ -102,6 +116,7 @@ task shutdown << {
 }
 
 task ev3devInfo {
+    group ev3devGroup
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
@@ -110,19 +125,3 @@ task ev3devInfo {
         }
     }
 }
-
-//Organize tasks in a Group
-def groupName = "ev3dev"
-stopBluetooth.group = groupName
-restartBluetooth.group = groupName
-stopNtp.group = groupName
-restartNtp.group = groupName
-stopNmbd.group = groupName
-restartNmbd.group = groupName
-stopBrickman.group = groupName
-restartBrickman.group = groupName
-getDebianDistro.group = groupName
-free.group = groupName
-ps.group = groupName
-shutdown.group = groupName
-ev3devInfo.group = groupName

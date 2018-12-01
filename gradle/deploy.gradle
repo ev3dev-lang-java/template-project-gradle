@@ -2,6 +2,10 @@ ssh.settings {
     knownHosts = allowAnyHosts
 }
 
+def baseGroup = "ELJ-Basic"
+def fatGroup = "ELJ-FatJar"
+def slimGroup = "ELJ-SlimJar"
+
 remotes {
     ev3dev {
         host = project.brickHost
@@ -10,7 +14,12 @@ remotes {
     }
 }
 
+/////////////
+// GENERAL //
+/////////////
+
 task testConnection {
+    group baseGroup
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
@@ -21,6 +30,7 @@ task testConnection {
 }
 
 task pkillJava {
+    group baseGroup
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
@@ -31,16 +41,24 @@ task pkillJava {
 }
 
 task removePreviousJar {
+    group baseGroup
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                sshPrint(delegate, "rm ${project.userJarPath()} ")
+                sshPrint(delegate, "rm -f ${project.userJarPath(true)} ${project.userJarPath(false)} ")
             }
         }
     }
 }
 
+
+////////////////
+// FAT BUILDS //
+////////////////
+
 task deploy {
+    group fatGroup
+    dependsOn clean, fatJar
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
@@ -50,9 +68,9 @@ task deploy {
         }
     }
 }
-deploy.dependsOn clean, fatJar
 
 task remoteRun {
+    group fatGroup
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
@@ -63,6 +81,7 @@ task remoteRun {
 }
 
 task remoteBrickRun {
+    group fatGroup
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
@@ -73,6 +92,7 @@ task remoteBrickRun {
 }
 
 task remoteRunClassVerbose {
+    group fatGroup
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
@@ -83,6 +103,7 @@ task remoteRunClassVerbose {
 }
 
 task remoteSudoRun {
+    group fatGroup
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
@@ -93,6 +114,7 @@ task remoteSudoRun {
 }
 
 task remoteProfilingRun {
+    group fatGroup
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
@@ -103,6 +125,7 @@ task remoteProfilingRun {
 }
 
 task remoteProfilingSudoRun {
+    group fatGroup
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
@@ -113,55 +136,47 @@ task remoteProfilingSudoRun {
 }
 
 task deployAndRun {
+    group fatGroup
+    dependsOn deploy, remoteRun
     doLast {
     }
 }
-deployAndRun.dependsOn deploy, remoteRun
 
 task deployAndBrickRun {
+    group fatGroup
+    dependsOn deploy, remoteBrickRun
     doLast {
     }
 }
-deployAndBrickRun.dependsOn deploy, remoteBrickRun
 
 
 task deployAndSudoRun {
+    group fatGroup
+    dependsOn deploy, remoteSudoRun
     doLast {
     }
 }
-deployAndSudoRun.dependsOn deploy, remoteSudoRun
 
 task deployAndProfilingRun {
+    group fatGroup
+    dependsOn deploy, remoteProfilingRun
     doLast {
     }
 }
-deployAndProfilingRun.dependsOn deploy, remoteProfilingRun
 
 task deployAndProfilingSudoRun {
+    group fatGroup
+    dependsOn deploy, remoteProfilingSudoRun
     doLast {
     }
 }
-deployAndProfilingSudoRun.dependsOn deploy, remoteProfilingSudoRun
 
-//Organize tasks in a Group
-def groupName = "ev3dev-lang-java"
-testConnection.group = groupName
-removePreviousJar.group = groupName
-deploy.group = groupName
-remoteBrickRun.group = groupName
-remoteRun.group = groupName
-remoteRunClassVerbose.group = groupName
-remoteSudoRun.group = groupName
-remoteProfilingRun.group = groupName
-remoteProfilingSudoRun.group = groupName
-deployAndRun.group = groupName
-deployAndBrickRun.group = groupName
-deployAndSudoRun.group = groupName
-deployAndProfilingRun.group = groupName
-deployAndProfilingSudoRun.group = groupName
-pkillJava.group = groupName
+/////////////////
+// SLIM BUILDS //
+/////////////////
 
 task installLibraries {
+    group slimGroup
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
@@ -176,7 +191,9 @@ task installLibraries {
     }
 }
 
-task deploy2 {
+task deploySlim {
+    group slimGroup
+    dependsOn clean, jar
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
@@ -186,10 +203,9 @@ task deploy2 {
         }
     }
 }
-deploy2.dependsOn clean, jar
 
-task remoteRun2 {
-
+task remoteRunSlim {
+    group slimGroup
     doLast {
         def dependenciesPath = ""
 
@@ -207,15 +223,9 @@ task remoteRun2 {
     }
 }
 
-task deployAndRun2 {
+task deployAndRunSlim {
+    group slimGroup
+    dependsOn deploySlim, remoteRunSlim
     doLast {
     }
 }
-deployAndRun2.dependsOn deploy, remoteRun2
-
-
-def groupName2 = "ev3dev-lang-java-slim"
-installLibraries.group = groupName2
-deploy2.group = groupName2
-deployAndRun2.group = groupName2
-remoteRun2.group = groupName2
