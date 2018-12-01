@@ -14,8 +14,7 @@ task testConnection {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                println "ls "
-                execute "ls "
+                sshPrint("ls ")
             }
         }
     }
@@ -25,8 +24,7 @@ task pkillJava {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                println "pkill java"
-                execute "pkill java"
+                sshPrint("pkill java")
             }
         }
     }
@@ -36,8 +34,7 @@ task removePreviousJar {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                println "rm /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
-                execute "rm /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
+                sshPrint("rm ${project.userJarPath()} ")
             }
         }
     }
@@ -47,7 +44,7 @@ task deploy {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                put from: "./build/libs/" + "${rootProject.name}" + "-" + version + "-all.jar", into: "/home/robot/"
+                put from: "./build/libs/${rootProject.name}-${version}-all.jar", into: "${project.userJarsPath}"
             }
         }
     }
@@ -58,8 +55,7 @@ task remoteRun {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                println "time java -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
-                execute "time java -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
+                sshPrint("time java -jar ${project.userJarPath()} ")
             }
         }
     }
@@ -69,8 +65,7 @@ task remoteBrickRun {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                println "time brickrun -- java -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
-                execute "time brickrun -- java -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
+                sshPrint("time brickrun -- java -jar ${project.userJarPath()} ")
             }
         }
     }
@@ -80,8 +75,7 @@ task remoteRunClassVerbose {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                println "java -verbose:class -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
-                execute "java -verbose:class -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
+                sshPrint("java -verbose:class -jar ${project.userJarPath()} ")
             }
         }
     }
@@ -91,8 +85,7 @@ task remoteSudoRun {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                println "echo -e \"${project.brickPassword}\" | sudo -S java -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all" + ".jar"
-                execute "echo -e \"${project.brickPassword}\" | sudo -S java -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all" + ".jar"
+                sshPrint("echo -e \"${project.brickPassword}\" | sudo -S java -jar ${project.userJarPath()} ")
             }
         }
     }
@@ -102,8 +95,7 @@ task remoteProfilingRun {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                println "brickrun -- java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
-                execute "brickrun -- java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
+                sshPrint("brickrun -- java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar ${project.userJarPath()} ")
             }
         }
     }
@@ -113,8 +105,7 @@ task remoteProfilingSudoRun {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                println "echo -e \"${project.brickPassword}\" | sudo -S brickrun -- java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
-                execute "echo -e \"${project.brickPassword}\" | sudo -S brickrun -- java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
+                sshPrint("echo -e \"${project.brickPassword}\" | sudo -S brickrun -- java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar ${project.userJarPath()} ")
             }
         }
     }
@@ -175,27 +166,15 @@ task installLibraries {
 
         ssh.run {
             session(remotes.ev3dev) {
-                println "rm -rf /home/robot/libs"
-                execute "rm -rf /home/robot/libs"
-                println "mkdir /home/robot/libs"
-                execute "mkdir /home/robot/libs"
-                println "wget https://jitpack.io/com/github/ev3dev-lang-java/ev3dev-lang-java/2.4.16/ev3dev-lang-java-2.4.16.jar -P /home/robot/libs/"
-                execute "wget https://jitpack.io/com/github/ev3dev-lang-java/ev3dev-lang-java/2.4.16/ev3dev-lang-java-2.4.16.jar -P /home/robot/libs/"
-                println "wget https://jitpack.io/com/github/ev3dev-lang-java/lejos-commons/0.7.2/lejos-commons-0.7.2.jar -P /home/robot/libs/"
-                execute "wget https://jitpack.io/com/github/ev3dev-lang-java/lejos-commons/0.7.2/lejos-commons-0.7.2.jar -P /home/robot/libs/"
-                println "wget http://central.maven.org/maven2/net/java/dev/jna/jna/4.5.2/jna-4.5.2.jar -P /home/robot/libs/"
-                execute "wget http://central.maven.org/maven2/net/java/dev/jna/jna/4.5.2/jna-4.5.2.jar -P /home/robot/libs/"
-                println "wget http://central.maven.org/maven2/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar -P /home/robot/libs/"
-                execute "wget http://central.maven.org/maven2/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar -P /home/robot/libs/"
-                println "wget http://central.maven.org/maven2/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar -P /home/robot/libs/"
-                execute "wget http://central.maven.org/maven2/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar -P /home/robot/libs/"
-                println "wget http://central.maven.org/maven2/ch/qos/logback/logback-core/1.2.3/logback-core-1.2.3.jar -P /home/robot/libs/"
-                execute "wget http://central.maven.org/maven2/ch/qos/logback/logback-core/1.2.3/logback-core-1.2.3.jar -P /home/robot/libs/"
-                println "wget http://central.maven.org/maven2/org/slf4j/slf4j-simple/1.7.25/slf4j-simple-1.7.25.jar -P /home/robot/libs/"
-                execute "wget http://central.maven.org/maven2/org/slf4j/slf4j-simple/1.7.25/slf4j-simple-1.7.25.jar -P /home/robot/libs/"
-
-
-
+                sshPrint("rm -rf ${project.externalJarsPath}")
+                sshPrint("mkdir ${project.externalJarsPath}")
+                sshPrint("wget https://jitpack.io/com/github/ev3dev-lang-java/ev3dev-lang-java/2.4.16/ev3dev-lang-java-2.4.16.jar -P ${project.externalJarsPath}")
+                sshPrint("wget https://jitpack.io/com/github/ev3dev-lang-java/lejos-commons/0.7.2/lejos-commons-0.7.2.jar -P ${project.externalJarsPath}")
+                sshPrint("wget http://central.maven.org/maven2/net/java/dev/jna/jna/4.5.2/jna-4.5.2.jar -P ${project.externalJarsPath}")
+                sshPrint("wget http://central.maven.org/maven2/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar -P ${project.externalJarsPath}")
+                sshPrint("wget http://central.maven.org/maven2/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar -P ${project.externalJarsPath}")
+                sshPrint("wget http://central.maven.org/maven2/ch/qos/logback/logback-core/1.2.3/logback-core-1.2.3.jar -P ${project.externalJarsPath}")
+                sshPrint("wget http://central.maven.org/maven2/org/slf4j/slf4j-simple/1.7.25/slf4j-simple-1.7.25.jar -P ${project.externalJarsPath}")
             }
         }
     }
@@ -211,15 +190,14 @@ task remoteRun2 {
         def dependenciesPath = ""
 
         project.externalJars.each {
-            dependenciesPath += ":/home/robot/libs/${it}"
+            dependenciesPath += ":${project.externalJarsPath}/${it}"
         }
 
         println dependenciesPath
 
         ssh.run {
             session(remotes.ev3dev) {
-                println "${project.prefix} java ${project.jvmFlags} -cp /home/robot/${rootProject.name}" + "-" + version + "-all.jar" + dependenciesPath + " ${project.mainClass}"
-                execute "${project.prefix} java ${project.jvmFlags} -cp /home/robot/${rootProject.name}" + "-" + version + "-all.jar" + dependenciesPath + " ${project.mainClass}"
+                sshPrint("${project.prefix} java ${project.jvmFlags} -cp ${project.userJarPath()}" + dependenciesPath + " ${project.mainClass}")
             }
         }
     }

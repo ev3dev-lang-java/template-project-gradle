@@ -27,5 +27,11 @@ project.ext {
             "ev3dev-lang-java-2.4.16.jar"
     ]
 
+    userJarsPath = "/home/robot"
+
     prefix = "time brickrun -- "
+
+    userJarPath = { ->
+        return "${project.userJarsPath}/${rootProject.name}-${version}-all.jar";
+    }
 }

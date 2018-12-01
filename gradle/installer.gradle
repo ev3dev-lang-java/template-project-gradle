@@ -5,16 +5,11 @@ ssh.settings {
 task getInstaller << {
     ssh.run {
         session(remotes.ev3dev) {
-            println "echo -e \"${project.brickPassword}\" | sudo -S rm -rf /home/robot/installer"
-            execute "echo -e \"${project.brickPassword}\" | sudo -S rm -rf /home/robot/installer"
-            println "mkdir /home/robot/installer"
-            execute "mkdir /home/robot/installer"
-            println "wget -N https://raw.githubusercontent.com/ev3dev-lang-java/installer/master/installer.sh -P /home/robot/installer"
-            execute "wget -N https://raw.githubusercontent.com/ev3dev-lang-java/installer/master/installer.sh -P /home/robot/installer"
-            println "chmod +x /home/robot/installer/installer.sh"
-            execute "chmod +x /home/robot/installer/installer.sh"
-            println "/home/robot/installer/installer.sh help"
-            execute "/home/robot/installer/installer.sh help"
+            sshPrint( "echo -e \"${project.brickPassword}\" | sudo -S rm -rf /home/robot/installer")
+            sshPrint( "mkdir /home/robot/installer")
+            sshPrint( "wget -N https://raw.githubusercontent.com/ev3dev-lang-java/installer/master/installer.sh -P /home/robot/installer")
+            sshPrint( "chmod +x /home/robot/installer/installer.sh")
+            sshPrint( "/home/robot/installer/installer.sh help")
         }
     }
 }
@@ -22,8 +17,7 @@ task getInstaller << {
 task help << {
     ssh.run {
         session(remotes.ev3dev) {
-            println "/home/robot/installer/installer.sh help"
-            execute "/home/robot/installer/installer.sh help"
+            sshRun("/home/robot/installer/installer.sh help")
         }
     }
 }
@@ -31,8 +25,7 @@ task help << {
 task installJava << {
     ssh.run {
         session(remotes.ev3dev) {
-            println "echo -e \"${project.brickPassword}\" | sudo -S /home/robot/installer/installer.sh java"
-            execute "echo -e \"${project.brickPassword}\" | sudo -S /home/robot/installer/installer.sh java"
+            sshRun("echo -e \"${project.brickPassword}\" | sudo -S /home/robot/installer/installer.sh java")
         }
     }
 }
@@ -40,8 +33,7 @@ task installJava << {
 task javaVersion << {
     ssh.run {
         session(remotes.ev3dev) {
-            println "java -version"
-            execute "java -version"
+            sshRun("java -version")
         }
     }
 }

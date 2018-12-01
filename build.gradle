@@ -19,6 +19,10 @@ apply plugin: 'idea'
 
 apply from: './config.gradle'
 
+def sshPrint(command) {
+    delegate.execute("echo ' --- Running command: \"" + command + "\" ---' && " + command)
+}
+
 //Wrapper
 task wrapper(type: Wrapper) {
     description = 'Generates gradlew[.bat] scripts'
