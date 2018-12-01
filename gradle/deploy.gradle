@@ -2,6 +2,14 @@ ssh.settings {
     knownHosts = allowAnyHosts
 }
 
+remotes {
+    ev3dev {
+        host = project.brickHost
+        user = project.brickUser
+        password = project.brickPassword
+    }
+}
+
 task testConnection {
     doLast {
         ssh.run {
@@ -12,8 +20,6 @@ task testConnection {
         }
     }
 }
-
-
 
 task pkillJava {
     doLast {
@@ -85,8 +91,8 @@ task remoteSudoRun {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                println "echo -e \"maker\" | sudo -S java -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all" + ".jar"
-                execute "echo -e \"maker\" | sudo -S java -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all" + ".jar"
+                println "echo -e \"" + project.brickPassword + "\" | sudo -S java -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all" + ".jar"
+                execute "echo -e \"" + project.brickPassword + "\" | sudo -S java -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all" + ".jar"
             }
         }
     }
@@ -107,8 +113,8 @@ task remoteProfilingSudoRun {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                println "echo -e \"maker\" | sudo -S brickrun -- java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
-                execute "echo -e \"maker\" | sudo -S brickrun -- java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
+                println "echo -e \"" + project.brickPassword + "\" | sudo -S brickrun -- java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
+                execute "echo -e \"" + project.brickPassword + "\" | sudo -S brickrun -- java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
             }
         }
     }
@@ -145,8 +151,6 @@ task deployAndProfilingSudoRun {
 }
 deployAndProfilingSudoRun.dependsOn deploy, remoteProfilingSudoRun
 
-apply from: './config.gradle'
-
 //Organize tasks in a Group
 def groupName = "ev3dev-lang-java"
 testConnection.group = groupName
@@ -164,3 +168,71 @@ deployAndSudoRun.group = groupName
 deployAndProfilingRun.group = groupName
 deployAndProfilingSudoRun.group = groupName
 pkillJava.group = groupName
+
+task installLibraries {
+
+    doLast {
+
+        ssh.run {
+            session(remotes.ev3dev) {
+                println "rm -rf /home/robot/libs"
+                execute "rm -rf /home/robot/libs"
+                println "mkdir /home/robot/libs"
+                execute "mkdir /home/robot/libs"
+                println "wget https://jitpack.io/com/github/ev3dev-lang-java/ev3dev-lang-java/2.4.16/ev3dev-lang-java-2.4.16.jar -P /home/robot/libs/"
+                execute "wget https://jitpack.io/com/github/ev3dev-lang-java/ev3dev-lang-java/2.4.16/ev3dev-lang-java-2.4.16.jar -P /home/robot/libs/"
+                println "wget https://jitpack.io/com/github/ev3dev-lang-java/lejos-commons/0.7.2/lejos-commons-0.7.2.jar -P /home/robot/libs/"
+                execute "wget https://jitpack.io/com/github/ev3dev-lang-java/lejos-commons/0.7.2/lejos-commons-0.7.2.jar -P /home/robot/libs/"
+                println "wget http://central.maven.org/maven2/net/java/dev/jna/jna/4.5.2/jna-4.5.2.jar -P /home/robot/libs/"
+                execute "wget http://central.maven.org/maven2/net/java/dev/jna/jna/4.5.2/jna-4.5.2.jar -P /home/robot/libs/"
+                println "wget http://central.maven.org/maven2/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar -P /home/robot/libs/"
+                execute "wget http://central.maven.org/maven2/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar -P /home/robot/libs/"
+                println "wget http://central.maven.org/maven2/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar -P /home/robot/libs/"
+                execute "wget http://central.maven.org/maven2/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar -P /home/robot/libs/"
+                println "wget http://central.maven.org/maven2/ch/qos/logback/logback-core/1.2.3/logback-core-1.2.3.jar -P /home/robot/libs/"
+                execute "wget http://central.maven.org/maven2/ch/qos/logback/logback-core/1.2.3/logback-core-1.2.3.jar -P /home/robot/libs/"
+                println "wget http://central.maven.org/maven2/org/slf4j/slf4j-simple/1.7.25/slf4j-simple-1.7.25.jar -P /home/robot/libs/"
+                execute "wget http://central.maven.org/maven2/org/slf4j/slf4j-simple/1.7.25/slf4j-simple-1.7.25.jar -P /home/robot/libs/"
+
+
+
+            }
+        }
+    }
+}
+
+task remoteRun2 {
+
+    doLast {
+
+        println project.externalJars
+
+        //def dependencies = project.externalJars.tokenize(' ')
+        def dependenciesPath = ""
+
+        project.externalJars.each {
+            dependenciesPath += ":/home/robot/libs/${it}"
+        }
+
+        println dependenciesPath
+
+        ssh.run {
+            session(remotes.ev3dev) {
+                println "${project.prefix} java ${project.jvmFlags} -cp /home/robot/${rootProject.name}" + "-" + version + "-all.jar" + dependenciesPath + " ${project.mainClass}"
+                execute "${project.prefix} java ${project.jvmFlags} -cp /home/robot/${rootProject.name}" + "-" + version + "-all.jar" + dependenciesPath + " ${project.mainClass}"
+            }
+        }
+    }
+}
+
+task deployAndRun2 {
+    doLast {
+    }
+}
+deployAndRun2.dependsOn deploy, remoteRun2
+
+
+def groupName2 = "ev3dev-lang-java-slim"
+installLibraries.group = groupName2
+deployAndRun2.group = groupName2
+remoteRun2.group = groupName2

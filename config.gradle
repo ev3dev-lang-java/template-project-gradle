@@ -1,8 +1,31 @@
 
-remotes {
-    ev3dev {
-        host = '192.168.1.86'
-        user = 'robot'
-        password = 'maker'
-    }
+//Configuration
+project.ext {
+
+    //Main program
+    mainClass = "example.robotics.ev3.actuator.LEDPatternsExample"
+
+    //Brick
+    brickHost = "192.168.2.3"
+    brickUser = "robot"
+    brickPassword = "maker"
+
+    //JVM
+    //jvmFlags = "-verbose:class"
+    jvmFlags = "-Xshare:on"
+    //jvmFlags = "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
+
+    //Dependencies
+    externalJarsPath = "/home/robot/libs/"
+    externalJars = [
+            "slf4j-api-1.7.25.jar",
+            "slf4j-simple-1.7.25.jar",
+            //"logback-core-1.2.3.jar",
+            //"logback-classic-1.2.3.jar",
+            "jna-4.5.2.jar",
+            "lejos-commons-0.7.2.jar",
+            "ev3dev-lang-java-2.4.16.jar"
+    ]
+
+    prefix = "time brickrun -- "
 }

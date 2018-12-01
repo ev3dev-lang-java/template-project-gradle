@@ -17,6 +17,8 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
+apply from: './config.gradle'
+
 //Wrapper
 task wrapper(type: Wrapper) {
     description = 'Generates gradlew[.bat] scripts'
@@ -29,9 +31,9 @@ repositories {
 }
 
 dependencies {
-    compile("ch.qos.logback:logback-classic:1.2.3")
-    compile("com.github.ev3dev-lang-java:ev3dev-lang-java:2.4.16")
-    //compile("com.github.ev3dev-lang-java:ev3dev-lang-java:0.7.0") // BrickPi3/PiStorms support
+    //compileOnly("ch.qos.logback:logback-classic:1.2.3")
+    compileOnly("org.slf4j:slf4j-simple:1.7.25")
+    compileOnly("com.github.ev3dev-lang-java:ev3dev-lang-java:2.4.16")
 }
 
 compileJava.options.encoding = 'UTF-8'
@@ -42,12 +44,17 @@ compileJava {
     targetCompatibility = 1.8
 }
 
+
+
 //Jar
 jar {
-    baseName = "${rootProject.name}"
+
     manifest {
-        from file("${projectDir}/src/main/resources/META-INF/MANIFEST.MF")
+        attributes("Implementation-Title": project.name,
+                "Implementation-Version": version,
+                "Main-Class": project.mainClass)
     }
+
 }
 
 //Fat Jar
