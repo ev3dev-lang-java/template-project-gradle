@@ -9,5 +9,6 @@ elif [ "@mode@" == "modulemain" ]; then
 elif [ "@mode@" == "modulepath" ]; then
     exec java @java_opts@  --module-path "@modulepath@" -m "@modulename@/@moduleclass@"
 else
+    echo "Please regenerate this script through Gradle task." 1>&2
     exit 1
 fi
