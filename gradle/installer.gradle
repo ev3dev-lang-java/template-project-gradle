@@ -9,6 +9,7 @@ task getInstaller {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
+                sshPrint(delegate, "mkdir -p /home/robot/java")
                 sshPrint(delegate,  "wget -N https://raw.githubusercontent.com/ev3dev-lang-java/installer/master/installer.sh -O /home/robot/java/installer.sh")
                 sshPrint(delegate,  "chmod +x /home/robot/java/installer.sh")
             }
@@ -43,7 +44,18 @@ task installNativeLibraries {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S /home/robot/java/installer.sh libs")
+                sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S /home/robot/java/installer.sh nativeLibs")
+            }
+        }
+    }
+}
+
+task installJavaLibraries {
+    group installerGroup
+    doLast {
+        ssh.run {
+            session(remotes.ev3dev) {
+                sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S /home/robot/java/installer.sh javaLibs")
             }
         }
     }
@@ -59,25 +71,5 @@ task javaVersion {
         }
     }
 }
-
-task installLibraries {
-    group installerGroup
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                sshPrint(delegate, "rm -rf ${project.externalJarsPath}")
-                sshPrint(delegate, "mkdir -p ${project.externalJarsPath}/")
-                configurations.runtime.each {
-                    println "Uploading: ${it.name}"
-                    delegate.put from: it.path, into: "${project.externalJarsPath}"
-                }
-                sshPrint(delegate, "mkdir -p ${project.appcdsPath}")
-                delegate.put from: "${project.rootDir}/gradle/appcds.lst", into: "${project.appcdsLstPath()}"
-                sshPrint(delegate, "java -XX:+UnlockDiagnosticVMOptions -XX:+UseAppCDS -cp \"${project.getSlimClassPath()}\" -Xshare:dump -XX:SharedClassListFile=${project.appcdsLstPath()} -XX:SharedArchiveFile=${project.appcdsJsaPath()}")
-            }
-        }
-    }
-}
-
 
 apply from: './config.gradle'
