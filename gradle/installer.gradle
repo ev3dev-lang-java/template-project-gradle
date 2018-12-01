@@ -9,22 +9,19 @@ task getInstaller {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                sshPrint(delegate,  "echo -e \"${project.brickPassword}\" | sudo -S rm -rf /home/robot/installer")
-                sshPrint(delegate,  "mkdir /home/robot/installer")
-                sshPrint(delegate,  "wget -N https://raw.githubusercontent.com/ev3dev-lang-java/installer/master/installer.sh -P /home/robot/installer")
-                sshPrint(delegate,  "chmod +x /home/robot/installer/installer.sh")
-                sshPrint(delegate,  "/home/robot/installer/installer.sh help")
+                sshPrint(delegate,  "wget -N https://raw.githubusercontent.com/ev3dev-lang-java/installer/master/installer.sh -O /home/robot/java/installer.sh")
+                sshPrint(delegate,  "chmod +x /home/robot/java/installer.sh")
             }
         }
     }
 }
 
-task help {
+task helpInstall {
     group installerGroup
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                sshPrint(delegate, "/home/robot/installer/installer.sh help")
+                sshPrint(delegate, "/home/robot/java/installer.sh help")
             }
         }
     }
@@ -35,7 +32,18 @@ task installJava {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S /home/robot/installer/installer.sh java")
+                sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S /home/robot/java/installer.sh java")
+            }
+        }
+    }
+}
+
+task installNativeLibraries {
+    group installerGroup
+    doLast {
+        ssh.run {
+            session(remotes.ev3dev) {
+                sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S /home/robot/java/installer.sh libs")
             }
         }
     }
