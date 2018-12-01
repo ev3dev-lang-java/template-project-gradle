@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ "@mode@" == "jarmain" ]; then
+    exec java @java_opts@ -jar "@jar@"
+elif [ "@mode@" == "jarpath" ]; then
+    exec java @java_opts@ -cp "@classpath@:@jar@" "@mainclass@"
+elif [ "@mode@" == "modulemain" ]; then
+    exec java @java_opts@ --module-path "@modulepath@" -m "@modulename@"
+elif [ "@mode@" == "modulepath" ]; then
+    exec java @java_opts@  --module-path "@modulepath@" -m "@modulename@/@moduleclass@"
+else
+    echo "Please regenerate this script through Gradle task." 1>&2
+    exit 1
+fi
