@@ -39,9 +39,7 @@ repositories {
 }
 
 dependencies {
-    //compileOnly("ch.qos.logback:logback-classic:1.2.3")
-    compileOnly("org.slf4j:slf4j-simple:1.7.25")
-    compileOnly("com.github.ev3dev-lang-java:ev3dev-lang-java:2.4.16")
+    compile "org.slf4j:slf4j-simple:1.7.25", "com.github.ev3dev-lang-java:ev3dev-lang-java:2.4.16"
 }
 
 compileJava.options.encoding = 'UTF-8'
@@ -51,8 +49,6 @@ compileJava {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 }
-
-
 
 //Jar
 jar {

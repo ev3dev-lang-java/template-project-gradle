@@ -44,7 +44,7 @@ task deploy {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                sshPrint(delegate, "mkdir -p ${project.userJarsPath}")
+                sshPrint(delegate, "mkdir -p ${project.userJarsPath}/")
                 put from: "./build/libs/${rootProject.name}-${version}-all.jar", into: "${project.userJarsPath}"
             }
         }
@@ -166,37 +166,42 @@ task installLibraries {
         ssh.run {
             session(remotes.ev3dev) {
                 sshPrint(delegate, "rm -rf ${project.externalJarsPath}")
-                sshPrint(delegate, "mkdir ${project.externalJarsPath}")
-                sshPrint(delegate, "wget https://jitpack.io/com/github/ev3dev-lang-java/ev3dev-lang-java/2.4.16/ev3dev-lang-java-2.4.16.jar -P ${project.externalJarsPath}")
-                sshPrint(delegate, "wget https://jitpack.io/com/github/ev3dev-lang-java/lejos-commons/0.7.2/lejos-commons-0.7.2.jar -P ${project.externalJarsPath}")
-                sshPrint(delegate, "wget http://central.maven.org/maven2/net/java/dev/jna/jna/4.5.2/jna-4.5.2.jar -P ${project.externalJarsPath}")
-                sshPrint(delegate, "wget http://central.maven.org/maven2/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar -P ${project.externalJarsPath}")
-                sshPrint(delegate, "wget http://central.maven.org/maven2/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar -P ${project.externalJarsPath}")
-                sshPrint(delegate, "wget http://central.maven.org/maven2/ch/qos/logback/logback-core/1.2.3/logback-core-1.2.3.jar -P ${project.externalJarsPath}")
-                sshPrint(delegate, "wget http://central.maven.org/maven2/org/slf4j/slf4j-simple/1.7.25/slf4j-simple-1.7.25.jar -P ${project.externalJarsPath}")
+                sshPrint(delegate, "mkdir -p ${project.externalJarsPath}/")
+                configurations.runtime.each {
+                    println "Uploading: ${it.name}"
+                    delegate.put from: it.path, into: "${project.externalJarsPath}"
+                }
             }
         }
     }
 }
 
+task deploy2 {
+    doLast {
+        ssh.run {
+            session(remotes.ev3dev) {
+                sshPrint(delegate, "mkdir -p ${project.userJarsPath}/")
+                put from: "./build/libs/${rootProject.name}-${version}.jar", into: "${project.userJarsPath}"
+            }
+        }
+    }
+}
+deploy2.dependsOn clean, jar
+
 task remoteRun2 {
 
     doLast {
-
-        println project.externalJars
-
-        //def dependencies = project.externalJars.tokenize(' ')
         def dependenciesPath = ""
 
-        project.externalJars.each {
-            dependenciesPath += ":${project.externalJarsPath}/${it}"
+        configurations.runtime.each {
+            dependenciesPath += ":${project.externalJarsPath}/${it.name}"
         }
 
         println dependenciesPath
 
         ssh.run {
             session(remotes.ev3dev) {
-                sshPrint(delegate, "${project.prefix} java ${project.jvmFlags} -cp ${project.userJarPath()}" + dependenciesPath + " ${project.mainClass}")
+                sshPrint(delegate, "${project.prefix} java ${project.jvmFlags} -cp ${project.userJarPath(false)}" + dependenciesPath + " ${project.mainClass}")
             }
         }
     }
@@ -211,5 +216,6 @@ deployAndRun2.dependsOn deploy, remoteRun2
 
 def groupName2 = "ev3dev-lang-java-slim"
 installLibraries.group = groupName2
+deploy2.group = groupName2
 deployAndRun2.group = groupName2
 remoteRun2.group = groupName2
