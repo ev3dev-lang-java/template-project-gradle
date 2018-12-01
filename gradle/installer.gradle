@@ -21,7 +21,7 @@ task help << {
     group installerGroup
     ssh.run {
         session(remotes.ev3dev) {
-            sshRun("/home/robot/installer/installer.sh help")
+            sshPrint(delegate, "/home/robot/installer/installer.sh help")
         }
     }
 }
@@ -30,7 +30,7 @@ task installJava << {
     group installerGroup
     ssh.run {
         session(remotes.ev3dev) {
-            sshRun("echo -e \"${project.brickPassword}\" | sudo -S /home/robot/installer/installer.sh java")
+            sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S /home/robot/installer/installer.sh java")
         }
     }
 }
@@ -39,7 +39,7 @@ task javaVersion << {
     group installerGroup
     ssh.run {
         session(remotes.ev3dev) {
-            sshRun("java -version")
+            sshPrint(delegate, "java -version")
         }
     }
 }

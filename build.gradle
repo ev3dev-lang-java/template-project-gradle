@@ -20,18 +20,19 @@ version = '2.4.17'
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: "net.ossindex.audit"
+apply plugin: 'org.hidetake.ssh'
 
 apply from: './config.gradle'
 
-def sshPrint(delegate, command) {
-    delegate.execute("echo ' --- Running command: \"" + command + "\" ---' && " + command)
-}
-
-//Wrapper
+// Gradle Wrapper
 task wrapper(type: Wrapper) {
     description = 'Generates gradlew[.bat] scripts'
     gradleVersion = '4.7'
 }
+
+// Project definitions
 
 repositories {
     maven { url "https://jitpack.io" }
@@ -52,25 +53,22 @@ compileJava {
 
 //Jar
 jar {
-
     manifest {
         attributes("Implementation-Title": project.name,
-                "Implementation-Version": version,
-                "Main-Class": project.mainClass)
+                   "Implementation-Version": version,
+                   "Main-Class": project.mainClass)
     }
-
 }
-
-//Fat Jar
-apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: "net.ossindex.audit"
 
 task fatJar {
     dependsOn shadowJar
     doLast {}
 }
 
-apply plugin: 'org.hidetake.ssh'
+def sshPrint(delegate, command) {
+    delegate.execute("echo ' --- Running command: \"" + command + "\" ---' && " + command)
+}
+
 apply from: './gradle/deploy.gradle'
 apply from: './gradle/ev3dev.gradle'
 apply from: './gradle/installer.gradle'
