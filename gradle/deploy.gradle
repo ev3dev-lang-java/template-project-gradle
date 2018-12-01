@@ -44,6 +44,7 @@ task deploy {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
+                sshPrint(delegate, "mkdir -p ${project.userJarsPath}")
                 put from: "./build/libs/${rootProject.name}-${version}-all.jar", into: "${project.userJarsPath}"
             }
         }
