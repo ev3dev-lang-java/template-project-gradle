@@ -149,25 +149,23 @@ task templateWrapperFat(type: Copy) {
 //  - jmx: is JMX agent activation wanted?
 //  - slim: deployment type
 def createRunTask(Map map) {
-    def groupName = map.slim ? rootProject.slimGroup : rootProject.fatGroup
+    def taskGroup = map.slim ? rootProject.slimGroup : rootProject.fatGroup
 
-    def runName = getTaskName(map, false)
-    def deployName = getTaskName(map, true)
-    def deployDep = getDeployName(map)
-    def cmdLine = getJavaCommand(map)
+    def onlyRunName = getTaskName(map, false)
+    def andDeployName = getTaskName(map, true)
 
-    task "$deployName" {
-        group "$groupName"
-        dependsOn "$deployDep", "$runName"
+    task "$andDeployName" {
+        group "$taskGroup"
+        dependsOn "${getDeployName(map)}", "$onlyRunName"
         doLast {}
     }
 
-    task "$runName" {
-        group "$groupName"
+    task "$onlyRunName" {
+        group "$taskGroup"
         doLast {
             ssh.run {
                 session(remotes.ev3dev) {
-                    sshPrint(delegate, "$cmdLine")
+                    sshPrint(delegate, "${getJavaCommand(map)}}")
                 }
             }
         }
@@ -179,24 +177,24 @@ def createRunTask(Map map) {
 // named arguments:
 //  - slim: deployment type
 def createDeployTask(Map map) {
-    def taskName = getDeployName(map)
     def wrapperPath = userWrapperPath(!map.slim)
-    def groupName, deploymentType, wrapperName, jarName
+
+    def taskGroup, artifactType, wrapperTask, jarName
     if (map.slim) {
-        groupName = rootProject.slimGroup
-        deploymentType = "jar"
-        wrapperName = "templateWrapperSlim"
+        taskGroup = rootProject.slimGroup
+        artifactType = "jar"
+        wrapperTask = "templateWrapperSlim"
         jarName = "${rootProject.name}-${version}.jar"
     } else {
-        groupName = rootProject.fatGroup
-        deploymentType = "fatJar"
-        wrapperName = "templateWrapperFat"
+        taskGroup = rootProject.fatGroup
+        artifactType = "fatJar"
+        wrapperTask = "templateWrapperFat"
         jarName = "${rootProject.name}-${version}-all.jar"
     }
 
-    task "$taskName" {
-        group "$groupName"
-        dependsOn clean, "$deploymentType", "$wrapperName"
+    task "${getDeployName(map)}" {
+        group "$taskGroup"
+        dependsOn clean, "$artifactType", "$wrapperTask"
         doLast {
             ssh.run {
                 session(remotes.ev3dev) {

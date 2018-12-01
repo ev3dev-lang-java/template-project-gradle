@@ -21,14 +21,12 @@ def getMgmtCommand(sudo, command) {
 //  - name: task name
 //  - command: command to be executed
 def createMgmtTask(sudo, name, command) {
-    def cmd = getMgmtCommand(sudo, command)
-
     task "$name" {
         group rootProject.ev3devGroup
         doLast {
             ssh.run {
                 session(remotes.ev3dev) {
-                    sshPrint(delegate, "$cmd")
+                    sshPrint(delegate, "${getMgmtCommand(sudo, command)}")
                 }
             }
         }
