@@ -10,21 +10,6 @@ remotes {
     }
 }
 
-// Directory paths
-project.ext.externalJarsPath = "/home/robot/java/libraries"
-project.ext.userJarsPath = "/home/robot/java/programs"
-project.ext.userWrappersPath = "/home/robot"
-
-project.ext.userJarPath = {
-    def suffix = project.slimJar ? "-all" : "";
-    return "${project.userJarsPath}/${rootProject.name}-${version}${suffix}.jar";
-}
-
-project.ext.userWrapperPath = {
-    def suffix = project.slimJar ? "-all" : "";
-    return "${project.userWrappersPath}/${rootProject.name}-${version}${suffix}.sh";
-}
-
 ext.baseGroup = "ELJ-Basic"
 ext.remoteGroup = "ELJ-Remote"
 
@@ -32,16 +17,22 @@ ext.remoteGroup = "ELJ-Remote"
 // TASK HELPERS //
 //////////////////
 
-/////////////////////////////////
-// Get classpath for a Slim JAR
-def getSlimClassPath() {
-    def dependenciesPath = "${project.userJarPath()}"
+////////////////////////////////////////
+// Get classpath for runtime libraries
+project.ext.getLibraryClassPath = {
+    def dependenciesPath = ""
 
     configurations.runtime.each {
         dependenciesPath += ":${project.externalJarsPath}/${it.name}"
     }
 
-    return dependenciesPath
+    return dependenciesPath.substring(1)
+}
+
+/////////////////////////////////
+// Get classpath for a Slim JAR
+project.ext.getSlimClassPath = {
+    return "${ project.userJarPath() }:${ project.getLibraryClassPath() }"
 }
 
 ////////////////////////////////////////
@@ -64,6 +55,10 @@ def getJavaCommand(Map map) {
         cmdLine += "brickrun -- "
     }
     cmdLine += "java "
+    cmdLine += jvmFlags + " "
+    if (project.AppCDS) {
+        cmdLine += "-XX:+UnlockDiagnosticVMOptions -XX:+UseAppCDS -XX:SharedArchiveFile=${project.appcdsJsaPath()} "
+    }
     if (map.verboseClass) {
         cmdLine += "-Xlog:class+load=info,class+unload=info "
     }
@@ -71,7 +66,7 @@ def getJavaCommand(Map map) {
         cmdLine += jmxFlags + " "
     }
     if (project.slimJar) {
-        cmdLine += "-cp \"${getSlimClassPath()}\" ${project.mainClass}"
+        cmdLine += "-cp \"${project.getSlimClassPath()}\" ${project.mainClass}"
     } else {
         cmdLine += "-jar ${project.userJarPath()}"
     }
@@ -121,7 +116,13 @@ task templateWrapperSlim(type: Copy) {
     into "${project.rootDir}/build/"
     include 'launcher-simple.sh.template'
     rename { file -> 'launcher.sh' }
-    expand(mode: "jarpath", java_opts: "$jvmFlags", classpath: "${getSlimClassPath()}", mainclass: "$mainClass")
+
+    def flags = "$jvmFlags "
+    if (project.AppCDS) {
+        flags += "-XX:+UnlockDiagnosticVMOptions -XX:+UseAppCDS -XX:SharedArchiveFile=${project.appcdsJsaPath()} "
+    }
+
+    expand(mode: "jarpath", java_opts: "$flags", classpath: "${project.getSlimClassPath()}", mainclass: "$mainClass")
 }
 
 task templateWrapperFat(type: Copy) {
@@ -129,7 +130,7 @@ task templateWrapperFat(type: Copy) {
     into "${project.rootDir}/build/"
     include 'launcher-simple.sh.template'
     rename { file -> 'launcher.sh' }
-    expand(mode: "jarmain", java_opts: "$jvmFlags", jar: "${userJarPath()}")
+    expand(mode: "jarmain", java_opts: "$jvmFlags", jar: "${project.userJarPath()}")
 }
 
 ///////////////////
@@ -159,7 +160,7 @@ def createRunTask(Map map) {
         doLast {
             ssh.run {
                 session(remotes.ev3dev) {
-                    sshPrint(delegate, "${getJavaCommand(map)}}")
+                    sshPrint(delegate, "${getJavaCommand(map)}")
                 }
             }
         }
@@ -171,7 +172,7 @@ def createRunTask(Map map) {
 // named arguments:
 //  - slim: deployment type
 def createDeployTask(Map map) {
-    def wrapperPath = userWrapperPath()
+    def wrapperPath = project.userWrapperPath()
 
     def artifactType, wrapperTask, jarName
     if (project.slimJar) {

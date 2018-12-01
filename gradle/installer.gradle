@@ -63,6 +63,9 @@ task installLibraries {
                     println "Uploading: ${it.name}"
                     delegate.put from: it.path, into: "${project.externalJarsPath}"
                 }
+                sshPrint(delegate, "mkdir -p ${project.appcdsPath}")
+                delegate.put from: "${project.rootDir}/gradle/appcds.lst", into: "${project.appcdsLstPath()}"
+                sshPrint(delegate, "java -XX:+UnlockDiagnosticVMOptions -XX:+UseAppCDS -cp \"${project.getSlimClassPath()}\" -Xshare:dump -XX:SharedClassListFile=${project.appcdsLstPath()} -XX:SharedArchiveFile=${project.appcdsJsaPath()}")
             }
         }
     }
