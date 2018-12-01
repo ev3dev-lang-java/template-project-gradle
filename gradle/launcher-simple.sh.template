@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ "@mode@" == "jarmain" ]; then
+    java @java_opts@ -jar "@jar@"
+elif [ "@mode@" == "jarpath" ]; then
+    java @java_opts@ -cp "@classpath@:@jar@" "@mainclass@"
+elif [ "@mode@" == "modulemain" ]; then
+    java @java_opts@ --module-path "@modulepath@" -m "@modulename@"
+elif [ "@mode@" == "modulepath" ]; then
+    java @java_opts@  --module-path "@modulepath@" -m "@modulename@/@moduleclass@"
+else
+    exit 1
+fi
