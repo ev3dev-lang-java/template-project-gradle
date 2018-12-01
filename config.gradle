@@ -25,14 +25,4 @@ project.ext {
  -Dcom.sun.management.jmxremote.port=7091\
  -Dcom.sun.management.jmxremote.authenticate=false\
  -Dcom.sun.management.jmxremote.ssl=false"
-
-    userJarPath = { fat = true ->
-        def suffix = fat ? "-all" : "";
-        return "${project.userJarsPath}/${rootProject.name}-${version}${suffix}.jar";
-    }
-
-    userWrapperPath = { fat = true ->
-        def suffix = fat ? "-all" : "";
-        return "${project.userWrappersPath}/${rootProject.name}-${version}${suffix}.sh";
-    }
 }

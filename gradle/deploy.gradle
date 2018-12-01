@@ -10,6 +10,17 @@ remotes {
     }
 }
 
+
+userJarPath = { fat = true ->
+    def suffix = fat ? "-all" : "";
+    return "${project.userJarsPath}/${rootProject.name}-${version}${suffix}.jar";
+}
+
+userWrapperPath = { fat = true ->
+    def suffix = fat ? "-all" : "";
+    return "${project.userWrappersPath}/${rootProject.name}-${version}${suffix}.sh";
+}
+
 ext.baseGroup = "ELJ-Basic"
 ext.fatGroup = "ELJ-FatJar"
 ext.slimGroup = "ELJ-SlimJar"
