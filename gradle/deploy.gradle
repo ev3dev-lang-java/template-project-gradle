@@ -14,7 +14,7 @@ task testConnection {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                sshPrint("ls ")
+                sshPrint(delegate, "ls ")
             }
         }
     }
@@ -24,7 +24,7 @@ task pkillJava {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                sshPrint("pkill java")
+                sshPrint(delegate, "pkill java")
             }
         }
     }
@@ -34,7 +34,7 @@ task removePreviousJar {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                sshPrint("rm ${project.userJarPath()} ")
+                sshPrint(delegate, "rm ${project.userJarPath()} ")
             }
         }
     }
@@ -55,7 +55,7 @@ task remoteRun {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                sshPrint("time java -jar ${project.userJarPath()} ")
+                sshPrint(delegate, "time java -jar ${project.userJarPath()} ")
             }
         }
     }
@@ -65,7 +65,7 @@ task remoteBrickRun {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                sshPrint("time brickrun -- java -jar ${project.userJarPath()} ")
+                sshPrint(delegate, "time brickrun -- java -jar ${project.userJarPath()} ")
             }
         }
     }
@@ -75,7 +75,7 @@ task remoteRunClassVerbose {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                sshPrint("java -verbose:class -jar ${project.userJarPath()} ")
+                sshPrint(delegate, "java -verbose:class -jar ${project.userJarPath()} ")
             }
         }
     }
@@ -85,7 +85,7 @@ task remoteSudoRun {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                sshPrint("echo -e \"${project.brickPassword}\" | sudo -S java -jar ${project.userJarPath()} ")
+                sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S java -jar ${project.userJarPath()} ")
             }
         }
     }
@@ -95,7 +95,7 @@ task remoteProfilingRun {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                sshPrint("brickrun -- java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar ${project.userJarPath()} ")
+                sshPrint(delegate, "brickrun -- java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar ${project.userJarPath()} ")
             }
         }
     }
@@ -105,7 +105,7 @@ task remoteProfilingSudoRun {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                sshPrint("echo -e \"${project.brickPassword}\" | sudo -S brickrun -- java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar ${project.userJarPath()} ")
+                sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S brickrun -- java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar ${project.userJarPath()} ")
             }
         }
     }
@@ -161,20 +161,18 @@ deployAndProfilingSudoRun.group = groupName
 pkillJava.group = groupName
 
 task installLibraries {
-
     doLast {
-
         ssh.run {
             session(remotes.ev3dev) {
-                sshPrint("rm -rf ${project.externalJarsPath}")
-                sshPrint("mkdir ${project.externalJarsPath}")
-                sshPrint("wget https://jitpack.io/com/github/ev3dev-lang-java/ev3dev-lang-java/2.4.16/ev3dev-lang-java-2.4.16.jar -P ${project.externalJarsPath}")
-                sshPrint("wget https://jitpack.io/com/github/ev3dev-lang-java/lejos-commons/0.7.2/lejos-commons-0.7.2.jar -P ${project.externalJarsPath}")
-                sshPrint("wget http://central.maven.org/maven2/net/java/dev/jna/jna/4.5.2/jna-4.5.2.jar -P ${project.externalJarsPath}")
-                sshPrint("wget http://central.maven.org/maven2/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar -P ${project.externalJarsPath}")
-                sshPrint("wget http://central.maven.org/maven2/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar -P ${project.externalJarsPath}")
-                sshPrint("wget http://central.maven.org/maven2/ch/qos/logback/logback-core/1.2.3/logback-core-1.2.3.jar -P ${project.externalJarsPath}")
-                sshPrint("wget http://central.maven.org/maven2/org/slf4j/slf4j-simple/1.7.25/slf4j-simple-1.7.25.jar -P ${project.externalJarsPath}")
+                sshPrint(delegate, "rm -rf ${project.externalJarsPath}")
+                sshPrint(delegate, "mkdir ${project.externalJarsPath}")
+                sshPrint(delegate, "wget https://jitpack.io/com/github/ev3dev-lang-java/ev3dev-lang-java/2.4.16/ev3dev-lang-java-2.4.16.jar -P ${project.externalJarsPath}")
+                sshPrint(delegate, "wget https://jitpack.io/com/github/ev3dev-lang-java/lejos-commons/0.7.2/lejos-commons-0.7.2.jar -P ${project.externalJarsPath}")
+                sshPrint(delegate, "wget http://central.maven.org/maven2/net/java/dev/jna/jna/4.5.2/jna-4.5.2.jar -P ${project.externalJarsPath}")
+                sshPrint(delegate, "wget http://central.maven.org/maven2/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar -P ${project.externalJarsPath}")
+                sshPrint(delegate, "wget http://central.maven.org/maven2/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar -P ${project.externalJarsPath}")
+                sshPrint(delegate, "wget http://central.maven.org/maven2/ch/qos/logback/logback-core/1.2.3/logback-core-1.2.3.jar -P ${project.externalJarsPath}")
+                sshPrint(delegate, "wget http://central.maven.org/maven2/org/slf4j/slf4j-simple/1.7.25/slf4j-simple-1.7.25.jar -P ${project.externalJarsPath}")
             }
         }
     }
@@ -197,7 +195,7 @@ task remoteRun2 {
 
         ssh.run {
             session(remotes.ev3dev) {
-                sshPrint("${project.prefix} java ${project.jvmFlags} -cp ${project.userJarPath()}" + dependenciesPath + " ${project.mainClass}")
+                sshPrint(delegate, "${project.prefix} java ${project.jvmFlags} -cp ${project.userJarPath()}" + dependenciesPath + " ${project.mainClass}")
             }
         }
     }

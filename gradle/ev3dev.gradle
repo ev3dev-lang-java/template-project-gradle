@@ -1,7 +1,7 @@
 task stopBluetooth << {
     ssh.run {
         session(remotes.ev3dev) {
-            sshPrint("echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl stop bluetooth")
+            sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl stop bluetooth")
         }
     }
 }
@@ -9,7 +9,7 @@ task stopBluetooth << {
 task restartBluetooth << {
     ssh.run {
         session(remotes.ev3dev) {
-            sshPrint("echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl restart bluetooth")
+            sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl restart bluetooth")
         }
     }
 }
@@ -17,7 +17,7 @@ task restartBluetooth << {
 task stopNtp << {
     ssh.run {
         session(remotes.ev3dev) {
-            sshPrint("echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl stop ntp")
+            sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl stop ntp")
         }
     }
 }
@@ -25,7 +25,7 @@ task stopNtp << {
 task restartNtp << {
     ssh.run {
         session(remotes.ev3dev) {
-            sshPrint("echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl restart ntp")
+            sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl restart ntp")
         }
     }
 }
@@ -34,7 +34,7 @@ task restartNtp << {
 task stopNmbd << {
     ssh.run {
         session(remotes.ev3dev) {
-            sshPrint("echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl stop nmbd")
+            sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl stop nmbd")
         }
     }
 }
@@ -42,7 +42,7 @@ task stopNmbd << {
 task restartNmbd << {
     ssh.run {
         session(remotes.ev3dev) {
-            sshPrint("echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl restart nmbd")
+            sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl restart nmbd")
         }
     }
 }
@@ -51,7 +51,7 @@ task restartNmbd << {
 task stopBrickman << {
     ssh.run {
         session(remotes.ev3dev) {
-            sshPrint("echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl stop brickman")
+            sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl stop brickman")
         }
     }
 }
@@ -59,7 +59,7 @@ task stopBrickman << {
 task restartBrickman << {
     ssh.run {
         session(remotes.ev3dev) {
-            sshPrint("echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl restart brickman")
+            sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl restart brickman")
         }
     }
 }
@@ -67,7 +67,7 @@ task restartBrickman << {
 task getDebianDistro << {
     ssh.run {
         session(remotes.ev3dev) {
-            sshPrint("cat /etc/os-release")
+            sshPrint(delegate, "cat /etc/os-release")
         }
     }
 }
@@ -77,7 +77,7 @@ task free {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                sshPrint("free")
+                sshPrint(delegate, "free")
             }
         }
     }
@@ -87,7 +87,7 @@ task ps {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                sshPrint("ps aux | sort -n -k 4 ")
+                sshPrint(delegate, "ps aux | sort -n -k 4 ")
             }
         }
     }
@@ -96,7 +96,7 @@ task ps {
 task shutdown << {
     ssh.run {
         session(remotes.ev3dev) {
-            sshPrint("echo -e \"${project.brickPassword}\" | sudo -S sudo shutdown -h now")
+            sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo shutdown -h now")
         }
     }
 }
@@ -105,7 +105,7 @@ task ev3devInfo {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                sshPrint("ev3dev-sysinfo -m")
+                sshPrint(delegate, "ev3dev-sysinfo -m")
             }
         }
     }

@@ -19,7 +19,7 @@ apply plugin: 'idea'
 
 apply from: './config.gradle'
 
-def sshPrint(command) {
+def sshPrint(delegate, command) {
     delegate.execute("echo ' --- Running command: \"" + command + "\" ---' && " + command)
 }
 

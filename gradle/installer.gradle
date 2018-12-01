@@ -5,11 +5,11 @@ ssh.settings {
 task getInstaller << {
     ssh.run {
         session(remotes.ev3dev) {
-            sshPrint( "echo -e \"${project.brickPassword}\" | sudo -S rm -rf /home/robot/installer")
-            sshPrint( "mkdir /home/robot/installer")
-            sshPrint( "wget -N https://raw.githubusercontent.com/ev3dev-lang-java/installer/master/installer.sh -P /home/robot/installer")
-            sshPrint( "chmod +x /home/robot/installer/installer.sh")
-            sshPrint( "/home/robot/installer/installer.sh help")
+            sshPrint(delegate,  "echo -e \"${project.brickPassword}\" | sudo -S rm -rf /home/robot/installer")
+            sshPrint(delegate,  "mkdir /home/robot/installer")
+            sshPrint(delegate,  "wget -N https://raw.githubusercontent.com/ev3dev-lang-java/installer/master/installer.sh -P /home/robot/installer")
+            sshPrint(delegate,  "chmod +x /home/robot/installer/installer.sh")
+            sshPrint(delegate,  "/home/robot/installer/installer.sh help")
         }
     }
 }
