@@ -14,7 +14,6 @@ ext.baseGroup = "ELJ-Basic"
 ext.fatGroup = "ELJ-FatJar"
 ext.slimGroup = "ELJ-SlimJar"
 
-
 //////////////////
 // TASK HELPERS //
 //////////////////
@@ -116,6 +115,26 @@ def getDeployName(Map map) {
     }
 }
 
+/////////////////////
+// WRAPPER SUPPORT //
+/////////////////////
+
+task templateWrapperSlim(type: Copy) {
+    from "${project.rootDir}/gradle/"
+    into "${project.rootDir}/build/"
+    include 'launcher-simple.sh.template'
+    rename { file -> 'launcher.sh' }
+    expand(mode: "jarpath", java_opts: "$jvmFlags", classpath: "${getSlimClassPath()}", mainclass: "$mainClass")
+}
+
+task templateWrapperFat(type: Copy) {
+    from "${project.rootDir}/gradle/"
+    into "${project.rootDir}/build/"
+    include 'launcher-simple.sh.template'
+    rename { file -> 'launcher.sh' }
+    expand(mode: "jarmain", java_opts: "$jvmFlags", jar: "${userJarPath(true)}")
+}
+
 ///////////////////
 // TASK CREATION //
 ///////////////////
@@ -160,20 +179,32 @@ def createRunTask(Map map) {
 // named arguments:
 //  - slim: deployment type
 def createDeployTask(Map map) {
-    def jarName = map.slim ? "${rootProject.name}-${version}.jar" : "${rootProject.name}-${version}-all.jar"
-    def depName = map.slim ? "jar" : "fatJar"
-    def grpName = map.slim ? rootProject.slimGroup : rootProject.fatGroup
     def taskName = getDeployName(map)
+    def wrapperPath = userWrapperPath(!map.slim)
+    def groupName, deploymentType, wrapperName, jarName
+    if (map.slim) {
+        groupName = rootProject.slimGroup
+        deploymentType = "jar"
+        wrapperName = "templateWrapperSlim"
+        jarName = "${rootProject.name}-${version}.jar"
+    } else {
+        groupName = rootProject.fatGroup
+        deploymentType = "fatJar"
+        wrapperName = "templateWrapperFat"
+        jarName = "${rootProject.name}-${version}-all.jar"
+    }
 
     task "$taskName" {
-        group "$grpName"
-        dependsOn clean, "$depName"
+        group "$groupName"
+        dependsOn clean, "$deploymentType", "$wrapperName"
         doLast {
             ssh.run {
                 session(remotes.ev3dev) {
                     sshPrint(delegate, "mkdir -p ${project.userJarsPath}/")
                     println "Uploading $jarName"
-                    put from: "./build/libs/$jarName", into: "${project.userJarsPath}"
+                    put from: "${project.rootDir}/build/libs/$jarName", into: "${project.userJarsPath}"
+                    put from: "${project.rootDir}/build/launcher.sh", into: "$wrapperPath"
+                    sshPrint(delegate, "chmod +x \"$wrapperPath\"")
                 }
             }
         }
