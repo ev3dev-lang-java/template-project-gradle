@@ -15,10 +15,6 @@ project.ext {
     jvmFlags = "-Xshare:on"
     //jvmFlags = "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
 
-    //Directory paths
-    externalJarsPath = "/home/robot/java/libraries"
-    userJarsPath = "/home/robot/java/programs"
-    userWrappersPath = "/home/robot"
 
     jmxFlags =
 "-Dcom.sun.management.jmxremote=true\

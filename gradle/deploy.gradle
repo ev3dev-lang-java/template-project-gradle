@@ -10,6 +10,10 @@ remotes {
     }
 }
 
+// Directory paths
+project.ext.externalJarsPath = "/home/robot/java/libraries"
+project.ext.userJarsPath = "/home/robot/java/programs"
+project.ext.userWrappersPath = "/home/robot"
 
 project.ext.userJarPath = { fat = true ->
     def suffix = fat ? "-all" : "";
