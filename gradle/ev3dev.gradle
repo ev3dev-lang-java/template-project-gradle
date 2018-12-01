@@ -1,5 +1,10 @@
 ext.ev3devGroup = "Ev3dev management"
 
+//////////////////////////////////////
+// Get command for a management task
+// normal arguments:
+//  - sudo: whether to prepend the command with sudo
+//  - command: command to be executed
 def getMgmtCommand(sudo, command) {
     def cmdLine = ""
     if (sudo) {
@@ -9,6 +14,12 @@ def getMgmtCommand(sudo, command) {
     return cmdLine
 }
 
+//////////////////////////////////////
+// Create service manipulation tasks
+// normal arguments:
+//  - sudo: whether to prepend the command with sudo
+//  - name: task name
+//  - command: command to be executed
 def createMgmtTask(sudo, name, command) {
     def cmd = getMgmtCommand(sudo, command)
 
@@ -24,11 +35,20 @@ def createMgmtTask(sudo, name, command) {
     }
 }
 
+//////////////////////////////////////
+// Create service manipulation tasks
+// normal arguments:
+//  - serviceName: systemd name of the manipulated service.
+//  - action: systemd action acting on the service
 def createServiceTaskSub(serviceName, action) {
     def taskName = action + serviceName.capitalize()
     createMgmtTask(true, taskName, "systemctl $action $serviceName")
 }
 
+////////////////////////////////////////
+// Create service manipulation tasks
+// normal arguments:
+//  - serviceName: systemd name of the manipulated service.
 def createServiceTask(serviceName) {
     createServiceTaskSub(serviceName, "stop")
     createServiceTaskSub(serviceName, "restart")

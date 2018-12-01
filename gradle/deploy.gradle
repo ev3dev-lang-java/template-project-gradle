@@ -2,10 +2,25 @@ ssh.settings {
     knownHosts = allowAnyHosts
 }
 
+remotes {
+    ev3dev {
+        host = project.brickHost
+        user = project.brickUser
+        password = project.brickPassword
+    }
+}
+
 ext.baseGroup = "ELJ-Basic"
 ext.fatGroup = "ELJ-FatJar"
 ext.slimGroup = "ELJ-SlimJar"
 
+
+//////////////////
+// TASK HELPERS //
+//////////////////
+
+/////////////////////////////////
+// Get classpath for a Slim JAR
 def getSlimClassPath() {
     def dependenciesPath = "${project.userJarPath(false)}"
 
@@ -16,6 +31,15 @@ def getSlimClassPath() {
     return dependenciesPath
 }
 
+////////////////////////////////////////
+// Get command line for java execution
+// named arguments:
+//  - sudo: whether prepend java with sudo
+//  - time: whether prepend java with time
+//  - brickrun: whether to prepend java with brickrun
+//  - verboseClass: whether to debug class loading
+//  - jmx: whether to activate the management agent
+//  - slim: JAR type
 def getJavaCommand(Map map) {
     def cmdLine = ""
     if (map.sudo) {
@@ -37,11 +61,21 @@ def getJavaCommand(Map map) {
     if (map.slim) {
         cmdLine += "-cp \"${getSlimClassPath()}\" ${project.mainClass}"
     } else {
-        cmdLine += "-jar ${project.userJarPath()}"
+        cmdLine += "-jar ${project.userJarPath(true)}"
     }
     return cmdLine
 }
 
+////////////////////////////////////////
+// Get command line for java execution
+// normal arguments:
+//  - deploy: whether to prepend the name with deployAnd or remote
+// named arguments:
+//  - sudo: add Sudo to name
+//  - brickrun: add Brick to name
+//  - verboseClass: add Classload to name
+//  - jmx: add Profiling to name
+//  - slim: add Slim to name
 def getTaskName(Map map, deploy = false) {
     def name = ""
 
@@ -70,6 +104,10 @@ def getTaskName(Map map, deploy = false) {
     return name
 }
 
+/////////////////////////////////
+// Get name for deployment task
+// named arguments:
+//  - slim: whether to include Slim in name
 def getDeployName(Map map) {
     if (map.slim) {
         return "deploySlim"
@@ -77,6 +115,20 @@ def getDeployName(Map map) {
         return "deploy"
     }
 }
+
+///////////////////
+// TASK CREATION //
+///////////////////
+
+//////////////////////
+// Create a Run task
+// named arguments:
+//  - sudo: is this a sudo run?
+//  - time: is this a timed run?
+//  - brickrun: is this a brickrun run?
+//  - verboseClass: is class loading debug wanted?
+//  - jmx: is JMX agent activation wanted?
+//  - slim: deployment type
 def createRunTask(Map map) {
     def groupName = map.slim ? rootProject.slimGroup : rootProject.fatGroup
 
@@ -103,6 +155,10 @@ def createRunTask(Map map) {
     }
 }
 
+/////////////////////////
+// Create a Deploy task
+// named arguments:
+//  - slim: deployment type
 def createDeployTask(Map map) {
     def jarName = map.slim ? "${rootProject.name}-${version}.jar" : "${rootProject.name}-${version}-all.jar"
     def depName = map.slim ? "jar" : "fatJar"
@@ -124,6 +180,11 @@ def createDeployTask(Map map) {
     }
 }
 
+////////////////////////
+// Create a Basic task
+// normal arguments:
+//  - name: task name
+//  - command: command to be executed
 def createBasicTask(name, command) {
     task "$name" {
         group rootProject.baseGroup
@@ -134,14 +195,6 @@ def createBasicTask(name, command) {
                 }
             }
         }
-    }
-}
-
-remotes {
-    ev3dev {
-        host = project.brickHost
-        user = project.brickUser
-        password = project.brickPassword
     }
 }
 
