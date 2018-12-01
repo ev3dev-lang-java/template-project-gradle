@@ -4,42 +4,50 @@ ssh.settings {
 
 def installerGroup = "ELJ-Installer"
 
-task getInstaller << {
+task getInstaller {
     group installerGroup
-    ssh.run {
-        session(remotes.ev3dev) {
-            sshPrint(delegate,  "echo -e \"${project.brickPassword}\" | sudo -S rm -rf /home/robot/installer")
-            sshPrint(delegate,  "mkdir /home/robot/installer")
-            sshPrint(delegate,  "wget -N https://raw.githubusercontent.com/ev3dev-lang-java/installer/master/installer.sh -P /home/robot/installer")
-            sshPrint(delegate,  "chmod +x /home/robot/installer/installer.sh")
-            sshPrint(delegate,  "/home/robot/installer/installer.sh help")
+    doLast {
+        ssh.run {
+            session(remotes.ev3dev) {
+                sshPrint(delegate,  "echo -e \"${project.brickPassword}\" | sudo -S rm -rf /home/robot/installer")
+                sshPrint(delegate,  "mkdir /home/robot/installer")
+                sshPrint(delegate,  "wget -N https://raw.githubusercontent.com/ev3dev-lang-java/installer/master/installer.sh -P /home/robot/installer")
+                sshPrint(delegate,  "chmod +x /home/robot/installer/installer.sh")
+                sshPrint(delegate,  "/home/robot/installer/installer.sh help")
+            }
         }
     }
 }
 
-task help << {
+task help {
     group installerGroup
-    ssh.run {
-        session(remotes.ev3dev) {
-            sshPrint(delegate, "/home/robot/installer/installer.sh help")
+    doLast {
+        ssh.run {
+            session(remotes.ev3dev) {
+                sshPrint(delegate, "/home/robot/installer/installer.sh help")
+            }
         }
     }
 }
 
-task installJava << {
+task installJava {
     group installerGroup
-    ssh.run {
-        session(remotes.ev3dev) {
-            sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S /home/robot/installer/installer.sh java")
+    doLast {
+        ssh.run {
+            session(remotes.ev3dev) {
+                sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S /home/robot/installer/installer.sh java")
+            }
         }
     }
 }
 
-task javaVersion << {
+task javaVersion {
     group installerGroup
-    ssh.run {
-        session(remotes.ev3dev) {
-            sshPrint(delegate, "java -version")
+    doLast {
+        ssh.run {
+            session(remotes.ev3dev) {
+                sshPrint(delegate, "java -version")
+            }
         }
     }
 }

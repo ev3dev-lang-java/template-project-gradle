@@ -19,7 +19,11 @@ project.ext {
     externalJarsPath = "/home/robot/libs"
     userJarsPath = "/home/robot"
 
-    prefix = "time brickrun -- "
+    jmxFlags =
+"-Dcom.sun.management.jmxremote=true\
+ -Dcom.sun.management.jmxremote.port=7091\
+ -Dcom.sun.management.jmxremote.authenticate=false\
+ -Dcom.sun.management.jmxremote.ssl=false"
 
     userJarPath = { fat = true ->
         def suffix = fat ? "-all" : "";

@@ -1,127 +1,45 @@
-def ev3devGroup = "Ev3dev management"
+ext.ev3devGroup = "Ev3dev management"
 
-task stopBluetooth << {
-    group ev3devGroup
-    ssh.run {
-        session(remotes.ev3dev) {
-            sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl stop bluetooth")
-        }
+def getMgmtCommand(sudo, command) {
+    def cmdLine = ""
+    if (sudo) {
+        cmdLine += "echo -e \"${project.brickPassword}\" | sudo -S "
     }
+    cmdLine += command
+    return cmdLine
 }
 
-task restartBluetooth << {
-    group ev3devGroup
-    ssh.run {
-        session(remotes.ev3dev) {
-            sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl restart bluetooth")
-        }
-    }
-}
+def createMgmtTask(sudo, name, command) {
+    def cmd = getMgmtCommand(sudo, command)
 
-task stopNtp << {
-    group ev3devGroup
-    ssh.run {
-        session(remotes.ev3dev) {
-            sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl stop ntp")
-        }
-    }
-}
-
-task restartNtp << {
-    group ev3devGroup
-    ssh.run {
-        session(remotes.ev3dev) {
-            sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl restart ntp")
-        }
-    }
-}
-
-
-task stopNmbd << {
-    group ev3devGroup
-    ssh.run {
-        session(remotes.ev3dev) {
-            sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl stop nmbd")
-        }
-    }
-}
-
-task restartNmbd << {
-    group ev3devGroup
-    ssh.run {
-        session(remotes.ev3dev) {
-            sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl restart nmbd")
-        }
-    }
-}
-
-
-task stopBrickman << {
-    group ev3devGroup
-    ssh.run {
-        session(remotes.ev3dev) {
-            sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl stop brickman")
-        }
-    }
-}
-
-task restartBrickman << {
-    group ev3devGroup
-    ssh.run {
-        session(remotes.ev3dev) {
-            sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo systemctl restart brickman")
-        }
-    }
-}
-
-task getDebianDistro << {
-    group ev3devGroup
-    ssh.run {
-        session(remotes.ev3dev) {
-            sshPrint(delegate, "cat /etc/os-release")
-        }
-    }
-}
-
-
-task free {
-    group ev3devGroup
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                sshPrint(delegate, "free")
+    task "$name" {
+        group rootProject.ev3devGroup
+        doLast {
+            ssh.run {
+                session(remotes.ev3dev) {
+                    sshPrint(delegate, "$cmd")
+                }
             }
         }
     }
 }
 
-task ps {
-    group ev3devGroup
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                sshPrint(delegate, "ps aux | sort -n -k 4 ")
-            }
-        }
-    }
+def createServiceTaskSub(serviceName, action) {
+    def taskName = action + serviceName.capitalize()
+    createMgmtTask(true, taskName, "systemctl $action $serviceName")
 }
 
-task shutdown << {
-    group ev3devGroup
-    ssh.run {
-        session(remotes.ev3dev) {
-            sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S sudo shutdown -h now")
-        }
-    }
+def createServiceTask(serviceName) {
+    createServiceTaskSub(serviceName, "stop")
+    createServiceTaskSub(serviceName, "restart")
 }
 
-task ev3devInfo {
-    group ev3devGroup
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                sshPrint(delegate, "ev3dev-sysinfo -m")
-            }
-        }
-    }
-}
+createServiceTask("bluetooth")
+createServiceTask("ntp")
+createServiceTask("nmbd")
+createServiceTask("brickman")
+createMgmtTask(false, "getDebianDistro", "cat /etc/os-release")
+createMgmtTask(false, "free", "free")
+createMgmtTask(false, "ps", "ps aux | sort -n -k 4")
+createMgmtTask(true, "shutdown", "shutdown -h now")
+createMgmtTask(false, "ev3devInfo", "ev3dev-sysinfo -m")

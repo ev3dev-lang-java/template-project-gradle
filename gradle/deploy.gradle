@@ -2,9 +2,140 @@ ssh.settings {
     knownHosts = allowAnyHosts
 }
 
-def baseGroup = "ELJ-Basic"
-def fatGroup = "ELJ-FatJar"
-def slimGroup = "ELJ-SlimJar"
+ext.baseGroup = "ELJ-Basic"
+ext.fatGroup = "ELJ-FatJar"
+ext.slimGroup = "ELJ-SlimJar"
+
+def getSlimClassPath() {
+    def dependenciesPath = "${project.userJarPath(false)}"
+
+    configurations.runtime.each {
+        dependenciesPath += ":${project.externalJarsPath}/${it.name}"
+    }
+
+    return dependenciesPath
+}
+
+def getJavaCommand(Map map) {
+    def cmdLine = ""
+    if (map.sudo) {
+        cmdLine += "echo -e \"${project.brickPassword}\" | sudo -S "
+    }
+    if (map.time) {
+        cmdLine += "time "
+    }
+    if (map.brickrun) {
+        cmdLine += "brickrun -- "
+    }
+    cmdLine += "java "
+    if (map.verboseClass) {
+        cmdLine += "-Xlog:class+load=info,class+unload=info "
+    }
+    if (map.jmx) {
+        cmdLine += jmxFlags + " "
+    }
+    if (map.slim) {
+        cmdLine += "-cp \"${getSlimClassPath()}\" ${project.mainClass}"
+    } else {
+        cmdLine += "-jar ${project.userJarPath()}"
+    }
+    return cmdLine
+}
+
+def getTaskName(Map map, deploy = false) {
+    def name = ""
+
+    if (deploy) {
+        name += "deployAnd"
+    } else {
+        name += "remote"
+    }
+
+    if (map.jmx) {
+        name += "Profiling"
+    }
+    if (map.sudo) {
+        name += "Sudo"
+    }
+    if (map.brickrun) {
+        name += "Brick"
+    }
+    name += "Run"
+    if (map.verboseClass) {
+        name += "Classload"
+    }
+    if (map.slim) {
+        name += "Slim";
+    }
+    return name
+}
+
+def getDeployName(Map map) {
+    if (map.slim) {
+        return "deploySlim"
+    } else {
+        return "deploy"
+    }
+}
+def createRunTask(Map map) {
+    def groupName = map.slim ? rootProject.slimGroup : rootProject.fatGroup
+
+    def runName = getTaskName(map, false)
+    def deployName = getTaskName(map, true)
+    def deployDep = getDeployName(map)
+    def cmdLine = getJavaCommand(map)
+
+    task "$deployName" {
+        group "$groupName"
+        dependsOn "$deployDep", "$runName"
+        doLast {}
+    }
+
+    task "$runName" {
+        group "$groupName"
+        doLast {
+            ssh.run {
+                session(remotes.ev3dev) {
+                    sshPrint(delegate, "$cmdLine")
+                }
+            }
+        }
+    }
+}
+
+def createDeployTask(Map map) {
+    def jarName = map.slim ? "${rootProject.name}-${version}.jar" : "${rootProject.name}-${version}-all.jar"
+    def depName = map.slim ? "jar" : "fatJar"
+    def grpName = map.slim ? rootProject.slimGroup : rootProject.fatGroup
+    def taskName = getDeployName(map)
+
+    task "$taskName" {
+        group "$grpName"
+        dependsOn clean, "$depName"
+        doLast {
+            ssh.run {
+                session(remotes.ev3dev) {
+                    sshPrint(delegate, "mkdir -p ${project.userJarsPath}/")
+                    println "Uploading $jarName"
+                    put from: "./build/libs/$jarName", into: "${project.userJarsPath}"
+                }
+            }
+        }
+    }
+}
+
+def createBasicTask(name, command) {
+    task "$name" {
+        group rootProject.baseGroup
+        doLast {
+            ssh.run {
+                session(remotes.ev3dev) {
+                    sshPrint(delegate, "$command")
+                }
+            }
+        }
+    }
+}
 
 remotes {
     ev3dev {
@@ -18,214 +149,31 @@ remotes {
 // GENERAL //
 /////////////
 
-task testConnection {
-    group baseGroup
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                sshPrint(delegate, "ls ")
-            }
-        }
-    }
-}
-
-task pkillJava {
-    group baseGroup
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                sshPrint(delegate, "pkill java")
-            }
-        }
-    }
-}
-
-task removePreviousJar {
-    group baseGroup
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                sshPrint(delegate, "rm -f ${project.userJarPath(true)} ${project.userJarPath(false)} ")
-            }
-        }
-    }
-}
-
+createBasicTask("testConnection", "ls")
+createBasicTask("pkillJava", "pkill java")
+createBasicTask("removePreviousJar", "rm -f ${project.userJarPath(true)} ${project.userJarPath(false)}")
 
 ////////////////
 // FAT BUILDS //
 ////////////////
 
-task deploy {
-    group fatGroup
-    dependsOn clean, fatJar
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                sshPrint(delegate, "mkdir -p ${project.userJarsPath}/")
-                put from: "./build/libs/${rootProject.name}-${version}-all.jar", into: "${project.userJarsPath}"
-            }
-        }
-    }
-}
-
-task remoteRun {
-    group fatGroup
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                sshPrint(delegate, "time java -jar ${project.userJarPath()} ")
-            }
-        }
-    }
-}
-
-task remoteBrickRun {
-    group fatGroup
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                sshPrint(delegate, "time brickrun -- java -jar ${project.userJarPath()} ")
-            }
-        }
-    }
-}
-
-task remoteRunClassVerbose {
-    group fatGroup
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                sshPrint(delegate, "java -verbose:class -jar ${project.userJarPath()} ")
-            }
-        }
-    }
-}
-
-task remoteSudoRun {
-    group fatGroup
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S java -jar ${project.userJarPath()} ")
-            }
-        }
-    }
-}
-
-task remoteProfilingRun {
-    group fatGroup
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                sshPrint(delegate, "brickrun -- java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar ${project.userJarPath()} ")
-            }
-        }
-    }
-}
-
-task remoteProfilingSudoRun {
-    group fatGroup
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S brickrun -- java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar ${project.userJarPath()} ")
-            }
-        }
-    }
-}
-
-task deployAndRun {
-    group fatGroup
-    dependsOn deploy, remoteRun
-    doLast {
-    }
-}
-
-task deployAndBrickRun {
-    group fatGroup
-    dependsOn deploy, remoteBrickRun
-    doLast {
-    }
-}
-
-
-task deployAndSudoRun {
-    group fatGroup
-    dependsOn deploy, remoteSudoRun
-    doLast {
-    }
-}
-
-task deployAndProfilingRun {
-    group fatGroup
-    dependsOn deploy, remoteProfilingRun
-    doLast {
-    }
-}
-
-task deployAndProfilingSudoRun {
-    group fatGroup
-    dependsOn deploy, remoteProfilingSudoRun
-    doLast {
-    }
-}
+createDeployTask(slim: false)
+createRunTask(slim: false, time: true)
+createRunTask(slim: false, time: true, brickrun: true)
+createRunTask(slim: false, verboseClass: true)
+createRunTask(slim: false, sudo: true)
+createRunTask(slim: false, jmx: true, brickrun: true)
+createRunTask(slim: false, jmx: true, brickrun: true, sudo: true)
 
 /////////////////
 // SLIM BUILDS //
 /////////////////
 
-task installLibraries {
-    group slimGroup
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                sshPrint(delegate, "rm -rf ${project.externalJarsPath}")
-                sshPrint(delegate, "mkdir -p ${project.externalJarsPath}/")
-                configurations.runtime.each {
-                    println "Uploading: ${it.name}"
-                    delegate.put from: it.path, into: "${project.externalJarsPath}"
-                }
-            }
-        }
-    }
-}
 
-task deploySlim {
-    group slimGroup
-    dependsOn clean, jar
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                sshPrint(delegate, "mkdir -p ${project.userJarsPath}/")
-                put from: "./build/libs/${rootProject.name}-${version}.jar", into: "${project.userJarsPath}"
-            }
-        }
-    }
-}
-
-task remoteRunSlim {
-    group slimGroup
-    doLast {
-        def dependenciesPath = ""
-
-        configurations.runtime.each {
-            dependenciesPath += ":${project.externalJarsPath}/${it.name}"
-        }
-
-        println dependenciesPath
-
-        ssh.run {
-            session(remotes.ev3dev) {
-                sshPrint(delegate, "${project.prefix} java ${project.jvmFlags} -cp ${project.userJarPath(false)}" + dependenciesPath + " ${project.mainClass}")
-            }
-        }
-    }
-}
-
-task deployAndRunSlim {
-    group slimGroup
-    dependsOn deploySlim, remoteRunSlim
-    doLast {
-    }
-}
+createDeployTask(slim: true)
+createRunTask(slim: true, time: true)
+createRunTask(slim: true, time: true, brickrun: true)
+createRunTask(slim: true, verboseClass: true)
+createRunTask(slim: true, sudo: true)
+createRunTask(slim: true, jmx: true, brickrun: true)
+createRunTask(slim: true, jmx: true, brickrun: true, sudo: true)
