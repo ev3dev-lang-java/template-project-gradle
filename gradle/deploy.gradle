@@ -11,12 +11,12 @@ remotes {
 }
 
 
-userJarPath = { fat = true ->
+project.ext.userJarPath = { fat = true ->
     def suffix = fat ? "-all" : "";
     return "${project.userJarsPath}/${rootProject.name}-${version}${suffix}.jar";
 }
 
-userWrapperPath = { fat = true ->
+project.ext.userWrapperPath = { fat = true ->
     def suffix = fat ? "-all" : "";
     return "${project.userWrappersPath}/${rootProject.name}-${version}${suffix}.sh";
 }
