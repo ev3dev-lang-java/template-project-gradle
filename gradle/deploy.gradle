@@ -56,7 +56,7 @@ def getJavaCommand(Map map) {
     }
     cmdLine += "java "
     cmdLine += jvmFlags + " "
-    if (project.AppCDS) {
+    if (project.appCDS) {
         cmdLine += "-XX:+UnlockDiagnosticVMOptions -XX:+UseAppCDS -XX:SharedArchiveFile=${project.appcdsJsaPath()} "
     }
     if (map.verboseClass) {
@@ -118,7 +118,7 @@ task templateWrapperSlim(type: Copy) {
     rename { file -> 'launcher.sh' }
 
     def flags = "$jvmFlags "
-    if (project.AppCDS) {
+    if (project.appCDS) {
         flags += "-XX:+UnlockDiagnosticVMOptions -XX:+UseAppCDS -XX:SharedArchiveFile=${project.appcdsJsaPath()} "
     }
 

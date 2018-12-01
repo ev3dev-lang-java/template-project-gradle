@@ -16,7 +16,7 @@ project.ext {
     //jvmFlags = "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
 
     slimJar = true
-    AppCDS = true
+    appCDS = true
 
     jmxFlags =
 "-Dcom.sun.management.jmxremote=true\
