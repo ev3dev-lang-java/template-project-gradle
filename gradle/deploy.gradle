@@ -91,8 +91,8 @@ task remoteSudoRun {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                println "echo -e \"" + project.brickPassword + "\" | sudo -S java -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all" + ".jar"
-                execute "echo -e \"" + project.brickPassword + "\" | sudo -S java -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all" + ".jar"
+                println "echo -e \"${project.brickPassword}\" | sudo -S java -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all" + ".jar"
+                execute "echo -e \"${project.brickPassword}\" | sudo -S java -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all" + ".jar"
             }
         }
     }
@@ -113,8 +113,8 @@ task remoteProfilingSudoRun {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                println "echo -e \"" + project.brickPassword + "\" | sudo -S brickrun -- java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
-                execute "echo -e \"" + project.brickPassword + "\" | sudo -S brickrun -- java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
+                println "echo -e \"${project.brickPassword}\" | sudo -S brickrun -- java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
+                execute "echo -e \"${project.brickPassword}\" | sudo -S brickrun -- java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
             }
         }
     }

@@ -5,8 +5,8 @@ ssh.settings {
 task getInstaller << {
     ssh.run {
         session(remotes.ev3dev) {
-            println "echo -e \"maker\" | sudo -S rm -rf /home/robot/installer"
-            execute "echo -e \"maker\" | sudo -S rm -rf /home/robot/installer"
+            println "echo -e \"${project.brickPassword}\" | sudo -S rm -rf /home/robot/installer"
+            execute "echo -e \"${project.brickPassword}\" | sudo -S rm -rf /home/robot/installer"
             println "mkdir /home/robot/installer"
             execute "mkdir /home/robot/installer"
             println "wget -N https://raw.githubusercontent.com/ev3dev-lang-java/installer/master/installer.sh -P /home/robot/installer"
@@ -31,8 +31,8 @@ task help << {
 task installJava << {
     ssh.run {
         session(remotes.ev3dev) {
-            println "echo -e \"maker\" | sudo -S /home/robot/installer/installer.sh java"
-            execute "echo -e \"maker\" | sudo -S /home/robot/installer/installer.sh java"
+            println "echo -e \"${project.brickPassword}\" | sudo -S /home/robot/installer/installer.sh java"
+            execute "echo -e \"${project.brickPassword}\" | sudo -S /home/robot/installer/installer.sh java"
         }
     }
 }
