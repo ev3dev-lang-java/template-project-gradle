@@ -21,9 +21,6 @@ project.ext {
 
     prefix = "time brickrun -- "
 
-    userJarName = { fat = true ->
-    }
-
     userJarPath = { fat = true ->
         def suffix = fat ? "-all" : "";
         return "${project.userJarsPath}/${rootProject.name}-${version}${suffix}.jar";
