@@ -15,6 +15,7 @@ project.ext {
     jvmFlags = "-Xshare:on"
     //jvmFlags = "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
 
+    slimJar = true
 
     jmxFlags =
 "-Dcom.sun.management.jmxremote=true\

@@ -15,19 +15,18 @@ project.ext.externalJarsPath = "/home/robot/java/libraries"
 project.ext.userJarsPath = "/home/robot/java/programs"
 project.ext.userWrappersPath = "/home/robot"
 
-project.ext.userJarPath = { fat = true ->
-    def suffix = fat ? "-all" : "";
+project.ext.userJarPath = {
+    def suffix = project.slimJar ? "-all" : "";
     return "${project.userJarsPath}/${rootProject.name}-${version}${suffix}.jar";
 }
 
-project.ext.userWrapperPath = { fat = true ->
-    def suffix = fat ? "-all" : "";
+project.ext.userWrapperPath = {
+    def suffix = project.slimJar ? "-all" : "";
     return "${project.userWrappersPath}/${rootProject.name}-${version}${suffix}.sh";
 }
 
 ext.baseGroup = "ELJ-Basic"
-ext.fatGroup = "ELJ-FatJar"
-ext.slimGroup = "ELJ-SlimJar"
+ext.remoteGroup = "ELJ-Remote"
 
 //////////////////
 // TASK HELPERS //
@@ -36,7 +35,7 @@ ext.slimGroup = "ELJ-SlimJar"
 /////////////////////////////////
 // Get classpath for a Slim JAR
 def getSlimClassPath() {
-    def dependenciesPath = "${project.userJarPath(false)}"
+    def dependenciesPath = "${project.userJarPath()}"
 
     configurations.runtime.each {
         dependenciesPath += ":${project.externalJarsPath}/${it.name}"
@@ -53,7 +52,6 @@ def getSlimClassPath() {
 //  - brickrun: whether to prepend java with brickrun
 //  - verboseClass: whether to debug class loading
 //  - jmx: whether to activate the management agent
-//  - slim: JAR type
 def getJavaCommand(Map map) {
     def cmdLine = ""
     if (map.sudo) {
@@ -72,10 +70,10 @@ def getJavaCommand(Map map) {
     if (map.jmx) {
         cmdLine += jmxFlags + " "
     }
-    if (map.slim) {
+    if (project.slimJar) {
         cmdLine += "-cp \"${getSlimClassPath()}\" ${project.mainClass}"
     } else {
-        cmdLine += "-jar ${project.userJarPath(true)}"
+        cmdLine += "-jar ${project.userJarPath()}"
     }
     return cmdLine
 }
@@ -89,7 +87,6 @@ def getJavaCommand(Map map) {
 //  - brickrun: add Brick to name
 //  - verboseClass: add Classload to name
 //  - jmx: add Profiling to name
-//  - slim: add Slim to name
 def getTaskName(Map map, deploy = false) {
     def name = ""
 
@@ -112,22 +109,7 @@ def getTaskName(Map map, deploy = false) {
     if (map.verboseClass) {
         name += "Classload"
     }
-    if (map.slim) {
-        name += "Slim";
-    }
     return name
-}
-
-/////////////////////////////////
-// Get name for deployment task
-// named arguments:
-//  - slim: whether to include Slim in name
-def getDeployName(Map map) {
-    if (map.slim) {
-        return "deploySlim"
-    } else {
-        return "deploy"
-    }
 }
 
 /////////////////////
@@ -147,7 +129,7 @@ task templateWrapperFat(type: Copy) {
     into "${project.rootDir}/build/"
     include 'launcher-simple.sh.template'
     rename { file -> 'launcher.sh' }
-    expand(mode: "jarmain", java_opts: "$jvmFlags", jar: "${userJarPath(true)}")
+    expand(mode: "jarmain", java_opts: "$jvmFlags", jar: "${userJarPath()}")
 }
 
 ///////////////////
@@ -162,21 +144,18 @@ task templateWrapperFat(type: Copy) {
 //  - brickrun: is this a brickrun run?
 //  - verboseClass: is class loading debug wanted?
 //  - jmx: is JMX agent activation wanted?
-//  - slim: deployment type
 def createRunTask(Map map) {
-    def taskGroup = map.slim ? rootProject.slimGroup : rootProject.fatGroup
-
     def onlyRunName = getTaskName(map, false)
     def andDeployName = getTaskName(map, true)
 
     task "$andDeployName" {
-        group "$taskGroup"
-        dependsOn "${getDeployName(map)}", "$onlyRunName"
+        group "${project.remoteGroup}"
+        dependsOn "deploy", "$onlyRunName"
         doLast {}
     }
 
     task "$onlyRunName" {
-        group "$taskGroup"
+        group "${project.remoteGroup}"
         doLast {
             ssh.run {
                 session(remotes.ev3dev) {
@@ -192,23 +171,21 @@ def createRunTask(Map map) {
 // named arguments:
 //  - slim: deployment type
 def createDeployTask(Map map) {
-    def wrapperPath = userWrapperPath(!map.slim)
+    def wrapperPath = userWrapperPath()
 
-    def taskGroup, artifactType, wrapperTask, jarName
-    if (map.slim) {
-        taskGroup = rootProject.slimGroup
+    def artifactType, wrapperTask, jarName
+    if (project.slimJar) {
         artifactType = "jar"
         wrapperTask = "templateWrapperSlim"
         jarName = "${rootProject.name}-${version}.jar"
     } else {
-        taskGroup = rootProject.fatGroup
         artifactType = "fatJar"
         wrapperTask = "templateWrapperFat"
         jarName = "${rootProject.name}-${version}-all.jar"
     }
 
-    task "${getDeployName(map)}" {
-        group "$taskGroup"
+    task "deploy" {
+        group "${project.remoteGroup}"
         dependsOn clean, "$artifactType", "$wrapperTask"
         doLast {
             ssh.run {
@@ -248,29 +225,16 @@ def createBasicTask(name, command) {
 
 createBasicTask("testConnection", "ls")
 createBasicTask("pkillJava", "pkill java")
-createBasicTask("removePreviousJar", "rm -f ${project.userJarPath(true)} ${project.userJarPath(false)}")
+createBasicTask("removePreviousJar", "rm -f ${project.userJarPath()}")
 
 ////////////////
 // FAT BUILDS //
 ////////////////
 
-createDeployTask(slim: false)
-createRunTask(slim: false, time: true)
-createRunTask(slim: false, time: true, brickrun: true)
-createRunTask(slim: false, verboseClass: true)
-createRunTask(slim: false, sudo: true)
-createRunTask(slim: false, jmx: true, brickrun: true)
-createRunTask(slim: false, jmx: true, brickrun: true, sudo: true)
-
-/////////////////
-// SLIM BUILDS //
-/////////////////
-
-
-createDeployTask(slim: true)
-createRunTask(slim: true, time: true)
-createRunTask(slim: true, time: true, brickrun: true)
-createRunTask(slim: true, verboseClass: true)
-createRunTask(slim: true, sudo: true)
-createRunTask(slim: true, jmx: true, brickrun: true)
-createRunTask(slim: true, jmx: true, brickrun: true, sudo: true)
+createDeployTask()
+createRunTask(time: true)
+createRunTask(time: true, brickrun: true)
+createRunTask(verboseClass: true)
+createRunTask(sudo: true)
+createRunTask(jmx: true, brickrun: true)
+createRunTask(jmx: true, brickrun: true, sudo: true)
