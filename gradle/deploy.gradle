@@ -58,6 +58,13 @@ project.createCommandTask(baseGroup, "undeploy",
 // TASKS //
 ///////////
 
+task fatJar {
+    group baseGroup
+    description "Build a fat JAR with all dependencies included inside"
+    dependsOn shadowJar
+    doLast {}
+}
+
 task templateWrapper(type: Copy) {
     from "${project.rootDir}/gradle/"
     into "${project.rootDir}/build/"
