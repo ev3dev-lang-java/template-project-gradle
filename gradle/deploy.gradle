@@ -71,7 +71,8 @@ task templateWrapper(type: Copy) {
     include 'launcher-simple.sh.template'
     rename { file -> 'launcher.sh' }
 
-    expand(command: getJavaCommand().replaceAll("brickrun( --)?", "").replaceAll("time", ""))
+    expand(command: getJavaCommand().replaceAll("brickrun( --)?", "").replaceAll("time", ""),
+           splash: project.splashPath)
 }
 
 task run {
@@ -102,6 +103,7 @@ task deploy {
                 project.sshPrint(delegate, "mkdir -p ${project.userJarsPath}/")
                 put from: "${project.rootDir}/build/libs/$jarName", into: "${project.userJarsPath}"
                 put from: "${project.rootDir}/build/launcher.sh", into: "$wrapperPath"
+                put from: "${project.rootDir}/gradle/splash.txt", into: project.splashPath
                 project.sshPrint(delegate, "chmod +x \"$wrapperPath\"")
             }
         }

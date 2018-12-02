@@ -13,6 +13,7 @@ project.ext.sshPrint = { delegate, command ->
 project.ext.externalJarsPath = "/home/robot/java/libraries"
 project.ext.userJarsPath = "/home/robot/java/programs"
 project.ext.userWrappersPath = "/home/robot"
+project.ext.splashPath = "/home/robot/java/splash.txt"
 project.ext.appcdsPath = "/home/robot/java/appcds"
 project.ext.appcdsLstPath = { return "/home/robot/java/appcds/all.lst" }
 project.ext.appcdsJsaPath = { return "/home/robot/java/appcds/${rootProject.name}-${version}.jsa" }
