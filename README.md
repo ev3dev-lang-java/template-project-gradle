@@ -36,9 +36,24 @@ The project includes some tasks to reduce the time to deploy on your robot.
 To start, change the `brickHost`, `brickUser` and `brickPassword` properties in `config.gradle`. Then, continue to the brick setup.
 
 ## Brick setup
-Run the following tasks:
+### EV3
+OpenJDK JRI is preinstalled in the default image, so you only need to install ev3dev-lang-java libraries:
 ```bash
-./gradlew getInstaller installJava installNativeLibraries installJavaLibraries javaVersion
+./gradlew getInstaller installJavaLibraries
+```
+If you want to use RXTX or OpenCV, you can install them this way:
+```bash
+./gradlew installNativeLibraries
+```
+
+### Other platforms
+On these platforms OpenJDK JRE needs to be installed from Debian repositories too:
+```bash
+./gradlew getInstaller installJava installJavaLibraries
+```
+If you want to use RXTX or OpenCV, you can again install them this way:
+```bash
+./gradlew installNativeLibraries
 ```
 
 ## Configuration
