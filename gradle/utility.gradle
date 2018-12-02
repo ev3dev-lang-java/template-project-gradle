@@ -1,6 +1,9 @@
 project.ext.jvmPrefix = ""
 project.ext.jvmFlags = ""
 
+// Whether to enable experimental AppCDS caching
+project.ext.appCDS = false
+
 project.ext.sshPrint = { delegate, command ->
     delegate.execute("echo ' --- Running command: \"" + command + "\" ---'")
     delegate.execute(command)

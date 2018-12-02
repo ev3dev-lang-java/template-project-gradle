@@ -60,7 +60,7 @@ You can change the project configuration in `config.gradle`.
   - `-XX:TieredStopAtLevel=1 ` - Do not perform many optimizations. This can be used to speed up startup time.
   - `-Djava.security.egd=file:/dev/./urandom ` - This can be used to speed up random number generation.
 - `slimJar` - Whether to generate a small JAR with external dependencies, or rather to generate a fat jar with embedded dependencies.
-- `appCDS` - Whether to enable experimental class caching through AppCDS.
+<!-- - `appCDS` - Whether to enable experimental class caching through AppCDS. -->
 
 ## Gradle Tasks
 

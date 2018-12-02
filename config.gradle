@@ -24,7 +24,4 @@ project.ext {
 
     // Whether to deploy a big jar with dependencies included (=false) or a small jar with external dependencies (=true)
     slimJar = true
-
-    // Whether to enable experimental AppCDS caching
-    appCDS = false
 }
