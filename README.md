@@ -49,9 +49,10 @@ You can change the project configuration in `config.gradle`.
 - `brickUser` - Username on your brick.
 - `brickPassword` - Password for the `brickUser`.
 - `jvmPrefix` - Commands which are prepended before the Java itself. **Keep at least one space character after each command.**
-  - `echo -e \"${project.brickPassword}\" | sudo -S ` - Can be used for running your program as root.
   - `time ` - Can be used to measure the time for which the program runs.
   - `brickrun -- ` - Should be used when running the program on a brick with a display.
+- `showSplash` - Whether to show ascii art splashscreen when running from Gradle.
+- `sudo` - If true, the program is launched under root.
 - `jvmFlags` - Flags for Java **Keep at least one space character after each flag.**
   - `-Xlog:class+load=info,class+unload=info ` - Display the debugging info for class loading.
   - `-Xshare:on ` - Enable Class Data Sharing (recommended).
