@@ -51,7 +51,7 @@ def getJavaCommand() {
 project.createCommandTask(baseGroup, "testConnection", "ls", "Test connection to the brick.")
 project.createCommandTask(baseGroup, "pkillJava", "pkill java", "Kill running Java instances.")
 project.createCommandTask(baseGroup, "undeploy",
-    "rm -f ${project.userJarPath()} ${project.userWrapperPath()}",
+    "rm -f ${project.userJarPath()} ${project.userWrapperPath()} ${project.appcdsJsaPath()}",
     "Remove previously uploaded JAR.")
 
 ///////////
