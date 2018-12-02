@@ -15,7 +15,7 @@ project.ext {
     // Commands preceeding Java
     //jvmPrefix += "echo -e \"${project.brickPassword}\" | sudo -S "
     jvmPrefix += "time "
-    //jvmPrefix += "brickrun -- "
+    jvmPrefix += "brickrun -- "
 
     // Java flags
     //jvmFlags += "-Xlog:class+load=info,class+unload=info "
