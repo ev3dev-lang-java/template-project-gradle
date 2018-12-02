@@ -13,7 +13,7 @@ The Prerequisites to use this project are:
 - To increase the EV3 CPU Speed, read the following article: https://lechnology.com/2018/06/overclocking-lego-mindstorms-ev3-part-2/
 - Your MINDSTORMS Brick needs to be connected to the same LAN than your laptop. http://www.ev3dev.org/docs/getting-started/#step-5-set-up-a-network-connection
 
-Note: Update the EV3Dev kernel 
+Note: Update the EV3Dev kernel
 https://www.ev3dev.org/docs/tutorials/upgrading-ev3dev/
 
 ```
@@ -33,20 +33,30 @@ an example ready to be deployed on your Robot using the `core` library from `EV3
 
 The project includes some tasks to reduce the time to deploy on your robot.
 
-Review the IP of your Brick and update the file `./gradle/deploy.gradle`:
+To start, change the `brickHost`, `brickUser` and `brickPassword` properties in `config.gradle`.
 
-```
-remotes {
-    ev3dev {
-        host = '192.168.1.180'
-        user = 'robot'
-        password = 'maker'
-    }
-}
-```
+## Configuration
+
+You can change the project configuration in `config.gradle`.
+- `mainClass` - Main class of your program.
+- `brickHost` - IP address of your brick.
+- `brickUser` - Username on your brick.
+- `brickPassword` - Password for the `brickUser`.
+- `jvmPrefix` - Commands which are prepended before the Java itself. **Keep at least one space character after each command.**
+  - `echo -e \"${project.brickPassword}\" | sudo -S ` - Can be used for running your program as root.
+  - `time ` - Can be used to measure the time for which the program runs.
+  - `brickrun -- ` - Should be used when running the program on a brick with a display.
+- `jvmFlags` - Flags for Java **Keep at least one space character after each flag.**
+  - `-Xlog:class+load=info,class+unload=info ` - Display the debugging info for class loading.
+  - `-Xshare:on ` - Enable Class Data Sharing (recommended).
+  - `-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false ` - Enable JMX agent.
+  - `-noverify ` - Do not verify class bytecode. This can be used to speed up startup time, but it is also a potential big security risk.
+  - `-XX:TieredStopAtLevel=1 ` - Do not perform many optimizations. This can be used to speed up startup time.
+  - `-Djava.security.egd=file:/dev/./urandom ` - This can be used to speed up random number generation.
+- `slimJar` - Whether to generate a small JAR with external dependencies, or rather to generate a fat jar with embedded dependencies.
+- `appCDS` - Whether to enable experimental class caching through AppCDS.
 
 ## Gradle Tasks
-
 
 The project has some tasks developed to interact in 3 areas:
 
@@ -54,47 +64,40 @@ The project has some tasks developed to interact in 3 areas:
 - EV3Dev
 - Installer
 
-### EV3Dev-lang-java
-The tasks associated to deploy on your Robot are:
 
-- testConnection (Test the connection with your Brick)
-- deploy (The project deliver a FatJar to your Brick)
-- remoteRun (Execute a Jar deployed on your Brick)
-- deployAndRun (Deploy & Execute from your Computer the program that you configured on the file: MANIFEST.MF)
-- ev3devInfo (Get technical information about your EV3 Brick)
-- removePreviousJar (Remove current jar remotely)
-- remoteBrickRun (If your program is going to use some EV3 Actuator like LCD, Buttons, use this task to execute the program)
-- remoteRun (Execute your jar remotely)
-- remoteRunClassVerbose (Execute your jar and show JVM info)
-- remoteProfilingRun (Execute your jar configured for Profiling activities)
-- deployAndBrickRun (Deploy & Execute your program with Brickrun)
-- deployAndProfilingRun  (Deploy & Execute your jar configured for Profiling activities)
-- pkillJava (Kill Java processes in your Brick)
-
-
-You can use the Java IDE to launch the task or execute them from the terminal
-
-```
+You can use the Java IDE to launch the tasks or you can execute them from the terminal:
+```bash
 ./gradlew deployAndBrickRun
 ```
 
-### EV3Dev
+### EV3Dev-lang-java tasks
+- `testConnection` - Test connection to the brick.
+- `deploy` - Deploy a new build of the program to the brick.
+- `deployAppCDS` - Deploys the program and performs AppCDS class data dump. (Only available in AppCDS mode)
+- `deployRun` - Deploy a new build of the program to the brick and then run it.
+- `run` - Run the program that is currently loaded on the brick.
+- `undeploy` - Remove previously uploaded JAR.
+- `pkillJava` - Kill running Java instances.
+- `fatJar` - Build a fat JAR with all dependencies included inside.
 
-- stopBluetooth (Stop bluetooth support)
-- restartBluetooth (Restart bluetooth)
-- stopNtp (Stop NTP)
-- restartNtp (Restart NTP)
-- stopBrickman (Stop Brickman)
-- restartBrickman (Restart Brickman)
-- free (Get information about Brick memory)
-- ps (Get information about processes running)
+### Installer tasks
+- `getInstaller` - Download the installer to the brick.
+- `helpInstall` - Print the installer help.
+- `installJava` - Install Java on the brick.
+- `installJavaLibraries` - Install EV3Dev-lang-java libraries on the brick.
+- `installNativeLibraries` - Install native libraries on the brick.
+- `javaVersion` - Print Java version which is present on the brick.
 
-### Installer
-
-- getInstaller (Get Installer)
-- help (Call help info from Installer)
-- installJava (Install java)
-- javaVersion (Show current java version running)
+### EV3Dev tasks
+- `ev3devInfo` - Get system summary from `ev3dev-sysinfo -m`.
+- `free` - Print free memory summary.
+- `getDebianDistro` - Get Debian version information from `/etc/os-release`.
+- `ps` - Print list of running processes.
+- `stopBluetooth`/`restartBluetooth` - Stop/restart the Bluetooth service.
+- `stopBrickman`/`restartBrickman` - Stop/restart the Brickman service.
+- `stopNmbd`/`restartNmbd` - Stop/restart the NMBD service.
+- `stopNtp`/`restartNtp` - Stop/restart the NTP service.
+- `shutdown` - Shut down the brick.
 
 ## Javadocs
 
