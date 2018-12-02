@@ -41,7 +41,15 @@ def getJavaCommand() {
     } else {
         specArgs = "-jar ${project.userJarPath()}"
     }
-    return "$jvmPrefix java $jvmFlags $cdsLine $specArgs"
+
+    if (project.showSplash) {
+        def argString = "$jvmFlags $cdsLine $specArgs"
+        argString = argString.replaceAll("\"","\\\\\"")
+        return "$jvmPrefix /bin/sh -c \"cat ${project.splashPath} & java $argString\""
+    } else {
+        return "$jvmPrefix java $jvmFlags $cdsLine $specArgs"
+    }
+
 }
 
 /////////////

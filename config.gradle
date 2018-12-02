@@ -14,6 +14,9 @@ project.ext {
     jvmPrefix += "time "
     //jvmPrefix += "brickrun -- "
 
+    // show splash screen from gradle run
+    showSplash = false
+
     // Java flags
     //jvmFlags += "-Xlog:class+load=info,class+unload=info "
     jvmFlags += "-Xshare:on "
