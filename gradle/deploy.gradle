@@ -71,7 +71,7 @@ task templateWrapper(type: Copy) {
     include 'launcher-simple.sh.template'
     rename { file -> 'launcher.sh' }
 
-    expand(command: getJavaCommand().replaceAll("brickrun( --)?", ""))
+    expand(command: getJavaCommand().replaceAll("brickrun( --)?", "").replaceAll("time", ""))
 }
 
 task run {
