@@ -47,19 +47,13 @@ def getJavaCommand(wrapper) {
         prefixPart = prefixPart.replaceAll("brickrun( --)?", "").replaceAll("time", "")
     }
 
-    def sudoPart = ""
     if (project.sudo) {
-        sudoPart = "echo \"${project.brickPassword}\" | sudo -S"
+        def sudoPart = "echo \"${project.brickPassword}\" | sudo -S"
+        def shLine = ("$sudoPart java $jvmFlags $cdsLine $specArgs").replaceAll("\"","\\\\\"")
+        return "$prefixPart /bin/sh -c \"$shLine\""
+    } else {
+        return "$prefixPart java $jvmFlags $cdsLine $specArgs"
     }
-
-    def splashPart = ""
-    if (project.showSplash && !wrapper) {
-        splashPart = "cat ${project.splashPath};"
-    }
-
-    def shLine = ("$splashPart $sudoPart java $jvmFlags $cdsLine $specArgs").replaceAll("\"","\\\\\"")
-
-    return "$prefixPart /bin/sh -c \"$shLine\""
 }
 
 /////////////
@@ -96,6 +90,10 @@ task run {
     group baseGroup
     description "Run the program that is currently loaded on the brick."
     doLast {
+        if (project.showSplash) {
+            def file = new File("${project.rootDir}/gradle/splash.txt")
+            println file.text
+        }
         ssh.run {
             session(remotes.ev3dev) {
                 project.sshPrint(delegate, "${getJavaCommand(false)}")
