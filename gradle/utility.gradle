@@ -47,15 +47,5 @@ project.ext.createCommandTask = { grpName, name, command, desc = "" ->
 //  - command: command to be executed
 //  - desc:    optional task description
 project.ext.createSudoCommandTask = { grpName, name, command, desc = "" ->
-    task "$name" {
-        group "$grpName"
-        description "$desc"
-        doLast {
-            ssh.run {
-                session(remotes.ev3dev) {
-                    project.sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S $command")
-                }
-            }
-        }
-    }
+    project.createCommandTask(grpName, name, "echo -e \"${project.brickPassword}\" | sudo -S $command", desc)
 }
