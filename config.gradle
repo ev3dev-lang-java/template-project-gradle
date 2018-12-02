@@ -9,11 +9,11 @@ project.ext {
     brickUser = "robot"
     brickPassword = "maker"
 
-    // Commands preceeding Java
+    // Commands preceding Java
     jvmPrefix += "time "
     //jvmPrefix += "brickrun -- "
 
-    // whether to run the program as root
+    // Run a Java process as root
     sudo = false
 
     // Java flags
@@ -21,9 +21,9 @@ project.ext {
     jvmFlags += "-Xshare:on "
     jvmFlags += "-noverify "
     jvmFlags += "-XX:TieredStopAtLevel=1 "
-    jvmFlags += "-Djava.security.egd=file:/dev/./urandom "
+    //jvmFlags += "-Djava.security.egd=file:/dev/./urandom "
     //jvmFlags += "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false "
 
-    // Whether to deploy a big jar with dependencies included (=false) or a small jar with external dependencies (=true)
+    // Slim | FatJar
     slimJar = true
 }
