@@ -1,8 +1,29 @@
+// Project configuration
+project.ext {
 
-remotes {
-    ev3dev {
-        host = '192.168.1.86'
-        user = 'robot'
-        password = 'maker'
-    }
+    // Main class
+    mainClass = "example.programming.HelloWorld"
+
+    // Brick connection parameters
+    brickHost = "192.168.2.4"
+    brickUser = "robot"
+    brickPassword = "maker"
+
+    // Commands preceding Java
+    jvmPrefix += "time "
+    //jvmPrefix += "brickrun -- "
+
+    // Run a Java process as root
+    sudo = false
+
+    // Java flags
+    //jvmFlags += "-Xlog:class+load=info,class+unload=info "
+    jvmFlags += "-Xshare:on "
+    jvmFlags += "-noverify "
+    jvmFlags += "-XX:TieredStopAtLevel=1 "
+    //jvmFlags += "-Djava.security.egd=file:/dev/./urandom "
+    //jvmFlags += "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false "
+
+    // Slim | FatJar
+    slimJar = true
 }

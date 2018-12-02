@@ -1,0 +1,58 @@
+project.ext.jvmPrefix = ""
+project.ext.jvmFlags = ""
+
+// Whether to enable experimental AppCDS caching
+project.ext.appCDS = false
+
+project.ext.sshPrint = { delegate, command ->
+    delegate.execute("echo ' --- Running command: \"" + command + "\" ---'")
+    delegate.execute(command)
+}
+
+// Directory paths
+project.ext.externalJarsPath = "/home/robot/java/libraries"
+project.ext.userJarsPath = "/home/robot/java/programs"
+project.ext.userWrappersPath = "/home/robot"
+project.ext.splashPath = "/home/robot/java/splash.txt"
+project.ext.appcdsPath = "/home/robot/java/appcds"
+project.ext.appcdsLstPath = { return "/home/robot/java/appcds/all.lst" }
+project.ext.appcdsJsaPath = { return "/home/robot/java/appcds/${rootProject.name}-${version}.jsa" }
+project.ext.userJarPath = {
+    def suffix = project.slimJar ? "" : "-all";
+    return "${project.userJarsPath}/${rootProject.name}-${version}${suffix}.jar";
+}
+project.ext.userWrapperPath = {
+    def suffix = project.slimJar ? "" : "-all";
+    return "${project.userWrappersPath}/${rootProject.name}-${version}${suffix}.sh";
+}
+
+////////////////////////
+// Create a Basic task
+// normal arguments:
+//  - grpName: command group name
+//  - name:    task name
+//  - command: command to be executed
+//  - desc:    optional task description
+project.ext.createCommandTask = { grpName, name, command, desc = "" ->
+    task "$name" {
+        group "$grpName"
+        description "$desc"
+        doLast {
+            ssh.run {
+                session(remotes.ev3dev) {
+                    project.sshPrint(delegate, "$command")
+                }
+            }
+        }
+    }
+}
+//////////////////////////////////
+// Create a Basic task with Sudo
+// normal arguments:
+//  - grpName: command group name
+//  - name:    task name
+//  - command: command to be executed
+//  - desc:    optional task description
+project.ext.createSudoCommandTask = { grpName, name, command, desc = "" ->
+    project.createCommandTask(grpName, name, "echo -e \"${project.brickPassword}\" | sudo -S $command", desc)
+}

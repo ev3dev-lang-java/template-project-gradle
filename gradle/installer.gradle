@@ -2,55 +2,48 @@ ssh.settings {
     knownHosts = allowAnyHosts
 }
 
-task getInstaller << {
-    ssh.run {
-        session(remotes.ev3dev) {
-            println "echo -e \"maker\" | sudo -S rm -rf /home/robot/installer"
-            execute "echo -e \"maker\" | sudo -S rm -rf /home/robot/installer"
-            println "mkdir /home/robot/installer"
-            execute "mkdir /home/robot/installer"
-            println "wget -N https://raw.githubusercontent.com/ev3dev-lang-java/installer/master/installer.sh -P /home/robot/installer"
-            execute "wget -N https://raw.githubusercontent.com/ev3dev-lang-java/installer/master/installer.sh -P /home/robot/installer"
-            println "chmod +x /home/robot/installer/installer.sh"
-            execute "chmod +x /home/robot/installer/installer.sh"
-            println "/home/robot/installer/installer.sh help"
-            execute "/home/robot/installer/installer.sh help"
+def installerGroup = "ELJ-Installer"
+
+task getInstaller {
+    group installerGroup
+    description "Download component installer on the brick."
+    doLast {
+        ssh.run {
+            session(remotes.ev3dev) {
+                project.sshPrint(delegate, "mkdir -p /home/robot/java")
+                project.sshPrint(delegate, "wget https://raw.githubusercontent.com/ev3dev-lang-java/installer/master/installer.sh -O /home/robot/java/installer.sh")
+                project.sshPrint(delegate, "chmod +x /home/robot/java/installer.sh")
+            }
         }
     }
 }
 
-task help << {
-    ssh.run {
-        session(remotes.ev3dev) {
-            println "/home/robot/installer/installer.sh help"
-            execute "/home/robot/installer/installer.sh help"
-        }
-    }
+if (project.appCDS) {
+    project.createSudoCommandTask(installerGroup, "dumpAppCDS_ClassList",
+        "/home/robot/java/installer.sh appcds",
+        "Dump class list for AppCDS from installed libraries.")
 }
 
-task installJava << {
-    ssh.run {
-        session(remotes.ev3dev) {
-            println "echo -e \"maker\" | sudo -S /home/robot/installer/installer.sh java"
-            execute "echo -e \"maker\" | sudo -S /home/robot/installer/installer.sh java"
-        }
-    }
-}
+project.createSudoCommandTask(installerGroup, "updateAPT",
+    "/home/robot/java/installer.sh update",
+    "Update APT repositories.")
 
-task javaVersion << {
-    ssh.run {
-        session(remotes.ev3dev) {
-            println "java -version"
-            execute "java -version"
-        }
-    }
-}
+project.createCommandTask(installerGroup, "helpInstall",
+    "/home/robot/java/installer.sh help",
+    "Print the installer help.")
 
-apply from: './config.gradle'
+project.createSudoCommandTask(installerGroup, "installJava",
+    "/home/robot/java/installer.sh java",
+    "Install Java on the brick.")
 
-//Organize tasks in a Group
-def groupName = "ev3dev-lang-java-installer"
-getInstaller.group = groupName
-help.group = groupName
-installJava.group = groupName
-javaVersion.group = groupName
+project.createSudoCommandTask(installerGroup, "installNativeLibraries",
+    "/home/robot/java/installer.sh nativeLibs",
+    "Install native libraries on the brick.")
+
+project.createSudoCommandTask(installerGroup, "installJavaLibraries",
+    "/home/robot/java/installer.sh javaLibs",
+    "Install Java libraries on the brick.")
+
+project.createCommandTask(installerGroup, "javaVersion",
+    "java -version",
+    "Print Java version which is present on the brick.")

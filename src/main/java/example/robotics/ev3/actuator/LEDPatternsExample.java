@@ -16,6 +16,7 @@ public class LEDPatternsExample {
 
         leftPatterns();
         rightPatterns();
+
     }
 
     public static void leftPatterns(){

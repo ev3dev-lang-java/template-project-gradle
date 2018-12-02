@@ -2,165 +2,148 @@ ssh.settings {
     knownHosts = allowAnyHosts
 }
 
-task testConnection {
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                println "ls "
-                execute "ls "
-            }
-        }
+remotes {
+    ev3dev {
+        host = project.brickHost
+        user = project.brickUser
+        password = project.brickPassword
     }
 }
 
+def baseGroup = "ELJ-Deployment"
 
+//////////////////
+// TASK HELPERS //
+//////////////////
 
-task pkillJava {
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                println "pkill java"
-                execute "pkill java"
-            }
-        }
+/////////////////////////////////
+// Get classpath for a Slim JAR
+project.ext.getSlimClassPath = {
+    def dependenciesPath = "${ project.userJarPath() }"
+
+    configurations.runtime.each {
+        dependenciesPath += ":${ project.externalJarsPath }/${ it.name }"
+    }
+
+    return dependenciesPath
+}
+
+////////////////////////////////////////
+// Get command line for java execution
+def getJavaCommand(wrapper) {
+    def cdsLine = ""
+    def specArgs = ""
+    if (project.appCDS) {
+        cdsLine = "-XX:+UnlockDiagnosticVMOptions -XX:+UseAppCDS -XX:SharedArchiveFile=${project.appcdsJsaPath()}"
+    }
+    if (project.slimJar) {
+        specArgs = "-cp \"${project.getSlimClassPath()}\" ${project.mainClass}"
+    } else {
+        specArgs = "-jar ${project.userJarPath()}"
+    }
+
+    def prefixPart = jvmPrefix
+    if (wrapper) {
+        prefixPart = prefixPart.replaceAll("brickrun( --)?", "").replaceAll("time", "")
+    }
+
+    if (project.sudo) {
+        def sudoPart = "echo \"${project.brickPassword}\" | sudo -S"
+        def shLine = ("$sudoPart java $jvmFlags $cdsLine $specArgs").replaceAll("\"","\\\\\"")
+        return "$prefixPart /bin/sh -c \"$shLine\""
+    } else {
+        return "$prefixPart java $jvmFlags $cdsLine $specArgs"
     }
 }
 
-task removePreviousJar {
+/////////////
+// GENERAL //
+/////////////
+
+project.createCommandTask(baseGroup, "testConnection", "ls", "Test connection to the brick.")
+project.createCommandTask(baseGroup, "pkillJava", "pkill java", "Kill running Java instances.")
+project.createCommandTask(baseGroup, "undeploy",
+    "rm -f ${project.userJarPath()} ${project.userWrapperPath()} ${project.appcdsJsaPath()}",
+    "Remove previously uploaded JAR.")
+
+///////////
+// TASKS //
+///////////
+
+task fatJar {
+    group baseGroup
+    description "Build a fat JAR with all dependencies included inside"
+    dependsOn shadowJar
+    doLast {}
+}
+
+task templateWrapper(type: Copy) {
+    from "${project.rootDir}/gradle/"
+    into "${project.rootDir}/build/"
+    include 'launcher-simple.sh.template'
+    rename { file -> 'launcher.sh' }
+
+    expand(command: getJavaCommand(true), splash: project.splashPath)
+}
+
+task run {
+    group baseGroup
+    description "Run the program that is currently loaded on the brick."
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                println "rm /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
-                execute "rm /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
+                project.sshPrint(delegate, "${getJavaCommand(false)}")
             }
         }
     }
 }
 
 task deploy {
+    group baseGroup
+    description "Deploy a new build of the program to the brick."
+    dependsOn clean
+    dependsOn templateWrapper
+    dependsOn project.slimJar ? "jar" : "fatJar"
     doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                put from: "./build/libs/" + "${rootProject.name}" + "-" + version + "-all.jar", into: "/home/robot/"
-            }
-        }
-    }
-}
-deploy.dependsOn clean, fatJar
+        def wrapperPath = project.userWrapperPath()
+        def jarName = project.slimJar ? "${rootProject.name}-${version}.jar" : "${rootProject.name}-${version}-all.jar"
 
-task remoteRun {
-    doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                println "time java -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
-                execute "time java -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
-            }
-        }
-    }
-}
-
-task remoteBrickRun {
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                println "time brickrun -- java -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
-                execute "time brickrun -- java -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
+                println "Uploading $jarName"
+                project.sshPrint(delegate, "mkdir -p ${project.userJarsPath}/")
+                put from: "${project.rootDir}/build/libs/$jarName", into: "${project.userJarsPath}"
+                put from: "${project.rootDir}/build/launcher.sh", into: "$wrapperPath"
+                put from: "${project.rootDir}/gradle/splash.txt", into: project.splashPath
+                project.sshPrint(delegate, "chmod +x \"$wrapperPath\"")
             }
         }
     }
 }
 
-task remoteRunClassVerbose {
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                println "java -verbose:class -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
-                execute "java -verbose:class -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
+task deployRun {
+    group baseGroup
+    description "Deploy a new build of the program to the brick and then run it."
+    dependsOn deploy, run
+    doLast {}
+}
+
+if (project.appCDS) {
+    task deployAppCDS {
+        group baseGroup
+        description "Deploys the program and performs AppCDS class data dump."
+        dependsOn deploy
+        doLast {
+            ssh.run {
+                session(remotes.ev3dev) {
+                    project.sshPrint(delegate, "java \
+                                            -cp \"${project.getSlimClassPath()}\" \
+                                            -XX:+UnlockDiagnosticVMOptions -XX:+UseAppCDS \
+                                            -Xshare:dump \
+                                            -XX:SharedClassListFile=${project.appcdsLstPath()} \
+                                            -XX:SharedArchiveFile=${project.appcdsJsaPath()}")
+                }
             }
         }
     }
 }
-
-task remoteSudoRun {
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                println "echo -e \"maker\" | sudo -S java -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all" + ".jar"
-                execute "echo -e \"maker\" | sudo -S java -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all" + ".jar"
-            }
-        }
-    }
-}
-
-task remoteProfilingRun {
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                println "brickrun -- java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
-                execute "brickrun -- java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
-            }
-        }
-    }
-}
-
-task remoteProfilingSudoRun {
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                println "echo -e \"maker\" | sudo -S brickrun -- java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
-                execute "echo -e \"maker\" | sudo -S brickrun -- java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar /home/robot/" + "${rootProject.name}" + "-" + version + "-all.jar "
-            }
-        }
-    }
-}
-
-task deployAndRun {
-    doLast {
-    }
-}
-deployAndRun.dependsOn deploy, remoteRun
-
-task deployAndBrickRun {
-    doLast {
-    }
-}
-deployAndBrickRun.dependsOn deploy, remoteBrickRun
-
-
-task deployAndSudoRun {
-    doLast {
-    }
-}
-deployAndSudoRun.dependsOn deploy, remoteSudoRun
-
-task deployAndProfilingRun {
-    doLast {
-    }
-}
-deployAndProfilingRun.dependsOn deploy, remoteProfilingRun
-
-task deployAndProfilingSudoRun {
-    doLast {
-    }
-}
-deployAndProfilingSudoRun.dependsOn deploy, remoteProfilingSudoRun
-
-apply from: './config.gradle'
-
-//Organize tasks in a Group
-def groupName = "ev3dev-lang-java"
-testConnection.group = groupName
-removePreviousJar.group = groupName
-deploy.group = groupName
-remoteBrickRun.group = groupName
-remoteRun.group = groupName
-remoteRunClassVerbose.group = groupName
-remoteSudoRun.group = groupName
-remoteProfilingRun.group = groupName
-remoteProfilingSudoRun.group = groupName
-deployAndRun.group = groupName
-deployAndBrickRun.group = groupName
-deployAndSudoRun.group = groupName
-deployAndProfilingRun.group = groupName
-deployAndProfilingSudoRun.group = groupName
-pkillJava.group = groupName
