@@ -1,3 +1,6 @@
+project.ext.jvmPrefix = ""
+project.ext.jvmFlags = ""
+
 project.ext.sshPrint = { delegate, command ->
     delegate.execute("echo ' --- Running command: \"" + command + "\" ---'")
     delegate.execute(command)

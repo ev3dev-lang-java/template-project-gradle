@@ -24,6 +24,7 @@ apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: "net.ossindex.audit"
 apply plugin: 'org.hidetake.ssh'
 
+apply from: './gradle/utility.gradle'
 apply from: './config.gradle'
 
 // Gradle Wrapper
@@ -40,7 +41,8 @@ repositories {
 }
 
 dependencies {
-    compile "org.slf4j:slf4j-simple:1.7.25", "com.github.ev3dev-lang-java:ev3dev-lang-java:2.4.16"
+    compile("org.slf4j:slf4j-simple:1.7.25")
+    compile("com.github.ev3dev-lang-java:ev3dev-lang-java:2.4.16")
 }
 
 compileJava.options.encoding = 'UTF-8'
@@ -60,7 +62,6 @@ jar {
     }
 }
 
-apply from: './gradle/utility.gradle'
 apply from: './gradle/deploy.gradle'
 apply from: './gradle/ev3dev.gradle'
 apply from: './gradle/installer.gradle'
