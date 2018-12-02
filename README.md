@@ -49,11 +49,11 @@ If you want to use RXTX or OpenCV, you can install them this way:
 ### Other platforms
 On these platforms OpenJDK JRE needs to be installed from Debian repositories too:
 ```bash
-./gradlew getInstaller installJava installJavaLibraries
+./gradlew getInstaller updateAPT installJava installJavaLibraries
 ```
 If you want to use RXTX or OpenCV, you can again install them this way:
 ```bash
-./gradlew installNativeLibraries
+./gradlew updateAPT installNativeLibraries
 ```
 
 ## Configuration
@@ -106,6 +106,7 @@ You can use the Java IDE to launch the tasks or you can execute them from the te
 - `installNativeLibraries` - Install native libraries on the brick.
 - `installJavaLibraries` - Install EV3Dev-lang-java libraries on the brick.
 - `javaVersion` - Print Java version which is present on the brick.
+- `updateAPT` - Update APT package cache.
 
 ### EV3Dev tasks
 - `ev3devInfo` - Get system summary from `ev3dev-sysinfo -m`.
