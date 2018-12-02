@@ -23,7 +23,7 @@ project.ext {
     //jvmFlags += "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false "
     // jvmFlags += "-noverify "
     // jvmFlags += "-XX:TieredStopAtLevel=1 "
-    // jvmFlags += "-Djava.security.egd=file:/dev/./urandom"
+    // jvmFlags += "-Djava.security.egd=file:/dev/./urandom "
 
     // Whether to deploy a big jar with dependencies included (=false) or a small jar with external dependencies (=true)
     slimJar = true
