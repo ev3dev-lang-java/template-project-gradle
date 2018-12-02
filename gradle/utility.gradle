@@ -4,9 +4,6 @@ project.ext.jvmFlags = ""
 // Whether to enable experimental AppCDS caching
 project.ext.appCDS = false
 
-// show splash screen on terminal when doing gradle run
-project.ext.showSplash = true
-
 project.ext.sshPrint = { delegate, command ->
     delegate.execute("echo ' --- Running command: \"" + command + "\" ---'")
     delegate.execute(command)
