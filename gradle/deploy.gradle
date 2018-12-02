@@ -30,7 +30,7 @@ project.ext.getSlimClassPath = {
 
 ////////////////////////////////////////
 // Get command line for java execution
-def getJavaCommand() {
+def getJavaCommand(wrapper) {
     def cdsLine = ""
     def specArgs = ""
     if (project.appCDS) {
@@ -42,12 +42,17 @@ def getJavaCommand() {
         specArgs = "-jar ${project.userJarPath()}"
     }
 
-    if (project.showSplash) {
+    def prefixString = jvmPrefix
+    if (wrapper) {
+        prefixString = prefixString.replaceAll("brickrun( --)?", "").replaceAll("time", "")
+    }
+
+    if (project.showSplash && !wrapper) {
         def argString = "$jvmFlags $cdsLine $specArgs"
         argString = argString.replaceAll("\"","\\\\\"")
-        return "$jvmPrefix /bin/sh -c \"cat ${project.splashPath} & java $argString\""
+        return "$prefixString /bin/sh -c \"cat ${project.splashPath} & java $argString\""
     } else {
-        return "$jvmPrefix java $jvmFlags $cdsLine $specArgs"
+        return "$prefixString java $jvmFlags $cdsLine $specArgs"
     }
 
 }
@@ -79,8 +84,7 @@ task templateWrapper(type: Copy) {
     include 'launcher-simple.sh.template'
     rename { file -> 'launcher.sh' }
 
-    expand(command: getJavaCommand().replaceAll("brickrun( --)?", "").replaceAll("time", ""),
-           splash: project.splashPath)
+    expand(command: getJavaCommand(true), splash: project.splashPath)
 }
 
 task run {
@@ -89,7 +93,7 @@ task run {
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                project.sshPrint(delegate, "${getJavaCommand()}")
+                project.sshPrint(delegate, "${getJavaCommand(false)}")
             }
         }
     }
