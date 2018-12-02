@@ -18,6 +18,12 @@ task getInstaller {
     }
 }
 
+if (project.appCDS) {
+    project.createSudoCommandTask(installerGroup, "dumpAppCDS_ClassList",
+        "/home/robot/java/installer.sh appcds",
+        "Dump class list for AppCDS from installed libraries.")
+}
+
 project.createSudoCommandTask(installerGroup, "updateAPT",
     "/home/robot/java/installer.sh update",
     "Update APT repositories.")
