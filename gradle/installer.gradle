@@ -18,8 +18,12 @@ task getInstaller {
     }
 }
 
+project.createSudoCommandTask(installerGroup, "updateAPT",
+    "/home/robot/java/installer.sh update",
+    "Update APT repositories.")
+
 project.createCommandTask(installerGroup, "helpInstall",
-    "/home/robot/java/installer.sh help", 
+    "/home/robot/java/installer.sh help",
     "Print the installer help.")
 
 project.createSudoCommandTask(installerGroup, "installJava",
