@@ -17,7 +17,6 @@ public class LEDPatternsExample {
         leftPatterns();
         rightPatterns();
 
-        Delay.msDelay(200000);
     }
 
     public static void leftPatterns(){
