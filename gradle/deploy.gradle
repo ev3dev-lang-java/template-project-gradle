@@ -90,9 +90,6 @@ task run {
     group baseGroup
     description "Run the program that is currently loaded on the brick."
     doLast {
-        def file = new File("${project.rootDir}/gradle/splash-gradle.txt")
-        println file.text
-
         ssh.run {
             session(remotes.ev3dev) {
                 project.sshPrint(delegate, "${getJavaCommand(false)}")
