@@ -10,13 +10,14 @@ project.ext {
     brickPassword = "maker"
 
     // Commands preceeding Java
-    //jvmPrefix += "echo -e \"${project.brickPassword}\" | sudo -S "
     jvmPrefix += "time "
     //jvmPrefix += "brickrun -- "
 
     // show splash screen from gradle run
     showSplash = false
 
+    // whether to run the program as root
+    sudo = false
     // Java flags
     //jvmFlags += "-Xlog:class+load=info,class+unload=info "
     jvmFlags += "-Xshare:on "

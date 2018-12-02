@@ -42,19 +42,24 @@ def getJavaCommand(wrapper) {
         specArgs = "-jar ${project.userJarPath()}"
     }
 
-    def prefixString = jvmPrefix
+    def prefixPart = jvmPrefix
     if (wrapper) {
-        prefixString = prefixString.replaceAll("brickrun( --)?", "").replaceAll("time", "")
+        prefixPart = prefixPart.replaceAll("brickrun( --)?", "").replaceAll("time", "")
     }
 
+    def sudoPart = ""
+    if (project.sudo) {
+        sudoPart = "echo \"${project.brickPassword}\" | sudo -S"
+    }
+
+    def splashPart = ""
     if (project.showSplash && !wrapper) {
-        def argString = "$jvmFlags $cdsLine $specArgs"
-        argString = argString.replaceAll("\"","\\\\\"")
-        return "$prefixString /bin/sh -c \"cat ${project.splashPath} & java $argString\""
-    } else {
-        return "$prefixString java $jvmFlags $cdsLine $specArgs"
+        splashPart = "cat ${project.splashPath};"
     }
 
+    def shLine = ("$splashPart $sudoPart java $jvmFlags $cdsLine $specArgs").replaceAll("\"","\\\\\"")
+
+    return "$prefixPart /bin/sh -c \"$shLine\""
 }
 
 /////////////
