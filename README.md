@@ -60,7 +60,6 @@ You can change the project configuration in `config.gradle`.
   - `-XX:TieredStopAtLevel=1 ` - Do not perform many optimizations. This can be used to speed up startup time.
   - `-Djava.security.egd=file:/dev/./urandom ` - This can be used to speed up random number generation.
 - `slimJar` - Whether to generate a small JAR with external dependencies, or rather to generate a fat jar with embedded dependencies.
-<!-- - `appCDS` - Whether to enable experimental class caching through AppCDS. -->
 
 ## Gradle Tasks
 
@@ -79,7 +78,6 @@ You can use the Java IDE to launch the tasks or you can execute them from the te
 ### EV3Dev-lang-java tasks
 - `testConnection` - Test connection to the brick.
 - `deploy` - Deploy a new build of the program to the brick.
-- `deployAppCDS` - Deploys the program and performs AppCDS class data dump. (Only available in AppCDS mode)
 - `deployRun` - Deploy a new build of the program to the brick and then run it.
 - `run` - Run the program that is currently loaded on the brick.
 - `undeploy` - Remove previously uploaded JAR.
