@@ -1,4 +1,4 @@
-project.ext.ev3devGroup = "Ev3dev management"
+project.ext.ev3devGroup = "ELJ-System"
 
 //////////////////////////////////////
 // Create service manipulation tasks
