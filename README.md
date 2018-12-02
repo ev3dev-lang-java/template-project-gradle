@@ -33,7 +33,13 @@ an example ready to be deployed on your Robot using the `core` library from `EV3
 
 The project includes some tasks to reduce the time to deploy on your robot.
 
-To start, change the `brickHost`, `brickUser` and `brickPassword` properties in `config.gradle`.
+To start, change the `brickHost`, `brickUser` and `brickPassword` properties in `config.gradle`. Then, continue to the brick setup.
+
+## Brick setup
+Run the following tasks:
+```bash
+./gradlew getInstaller installJava installNativeLibraries installJavaLibraries javaVersion
+```
 
 ## Configuration
 
@@ -81,11 +87,11 @@ You can use the Java IDE to launch the tasks or you can execute them from the te
 - `fatJar` - Build a fat JAR with all dependencies included inside.
 
 ### Installer tasks
-- `getInstaller` - Download the installer to the brick.
 - `helpInstall` - Print the installer help.
+- `getInstaller` - Download the installer to the brick.
 - `installJava` - Install Java on the brick.
-- `installJavaLibraries` - Install EV3Dev-lang-java libraries on the brick.
 - `installNativeLibraries` - Install native libraries on the brick.
+- `installJavaLibraries` - Install EV3Dev-lang-java libraries on the brick.
 - `javaVersion` - Print Java version which is present on the brick.
 
 ### EV3Dev tasks
