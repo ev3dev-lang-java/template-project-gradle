@@ -87,7 +87,7 @@ The project has some tasks developed to interact in 3 areas:
 
 You can use the Java IDE to launch the tasks or you can execute them from the terminal:
 ```bash
-./gradlew deployAndBrickRun
+./gradlew deployRun
 ```
 
 ### EV3Dev-lang-java tasks
