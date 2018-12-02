@@ -1,63 +1,32 @@
-ext.ev3devGroup = "Ev3dev management"
-
-//////////////////////////////////////
-// Get command for a management task
-// normal arguments:
-//  - sudo: whether to prepend the command with sudo
-//  - command: command to be executed
-def getMgmtCommand(sudo, command) {
-    def cmdLine = ""
-    if (sudo) {
-        cmdLine += "echo -e \"${project.brickPassword}\" | sudo -S "
-    }
-    cmdLine += command
-    return cmdLine
-}
-
-//////////////////////////////////////
-// Create service manipulation tasks
-// normal arguments:
-//  - sudo: whether to prepend the command with sudo
-//  - name: task name
-//  - command: command to be executed
-def createMgmtTask(sudo, name, command) {
-    task "$name" {
-        group rootProject.ev3devGroup
-        doLast {
-            ssh.run {
-                session(remotes.ev3dev) {
-                    sshPrint(delegate, "${getMgmtCommand(sudo, command)}")
-                }
-            }
-        }
-    }
-}
+project.ext.ev3devGroup = "Ev3dev management"
 
 //////////////////////////////////////
 // Create service manipulation tasks
 // normal arguments:
 //  - serviceName: systemd name of the manipulated service.
 //  - action: systemd action acting on the service
-def createServiceTaskSub(serviceName, action) {
+def createServiceTask(serviceName, action) {
     def taskName = action + serviceName.capitalize()
-    createMgmtTask(true, taskName, "systemctl $action $serviceName")
+    def taskDesc = "${action.capitalize()} the $serviceName service."
+
+    project.createSudoCommandTask(project.ev3devGroup, taskName, "systemctl $action $serviceName", taskDesc)
 }
 
 ////////////////////////////////////////
 // Create service manipulation tasks
 // normal arguments:
 //  - serviceName: systemd name of the manipulated service.
-def createServiceTask(serviceName) {
-    createServiceTaskSub(serviceName, "stop")
-    createServiceTaskSub(serviceName, "restart")
+def createServiceTasks(serviceName) {
+    createServiceTask(serviceName, "stop")
+    createServiceTask(serviceName, "restart")
 }
 
-createServiceTask("bluetooth")
-createServiceTask("ntp")
-createServiceTask("nmbd")
-createServiceTask("brickman")
-createMgmtTask(false, "getDebianDistro", "cat /etc/os-release")
-createMgmtTask(false, "free", "free")
-createMgmtTask(false, "ps", "ps aux | sort -n -k 4")
-createMgmtTask(true, "shutdown", "shutdown -h now")
-createMgmtTask(false, "ev3devInfo", "ev3dev-sysinfo -m")
+createServiceTasks("bluetooth")
+createServiceTasks("ntp")
+createServiceTasks("nmbd")
+createServiceTasks("brickman")
+createCommandTask(project.ev3devGroup, "getDebianDistro", "cat /etc/os-release", "Get the /etc/os-release file from the brick")
+createCommandTask(project.ev3devGroup, "free", "free", "Print free memory summary.")
+createCommandTask(project.ev3devGroup, "ps", "ps aux | sort -n -k 4", "Print list of running processes.")
+createSudoCommandTask(project.ev3devGroup, "shutdown", "shutdown -h now", "Shutdown the brick.")
+createCommandTask(project.ev3devGroup, "ev3devInfo", "ev3dev-sysinfo -m", "Get output of ev3dev-sysinfo -m.")

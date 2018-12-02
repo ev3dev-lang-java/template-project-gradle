@@ -1,15 +1,4 @@
 #!/bin/bash
 
-<% if (mode == "jarmain") { %>
-exec java ${java_opts} -jar ${jar}
-
-<% } else if (mode == "jarpath") { %>
-exec java ${java_opts} -cp "${classpath}" "${mainclass}"
-
-<% } else if (mode == "modulemain") { %>
-exec java ${java_opts} --module-path "${modulepath}" -m "${modulename}"
-
-<% } else if (mode == "modulepath") { %>
-exec java ${java_opts}  --module-path "${modulepath}" -m "${modulename}/${moduleclass}"
-
-<% } %>
+${command}
+exit \$?

@@ -1,26 +1,30 @@
+project.ext.jvmPrefix = ""
+project.ext.jvmFlags = ""
 
-//Configuration
+// Project configuration
 project.ext {
 
-    //Main program
+    // Main class
     mainClass = "example.robotics.ev3.actuator.LEDPatternsExample"
 
-    //Brick
+    // Brick connection parameters
     brickHost = "192.168.2.3"
     brickUser = "robot"
     brickPassword = "maker"
 
-    //JVM
-    //jvmFlags = "-verbose:class"
-    jvmFlags = "-Xshare:on"
-    //jvmFlags = "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
+    // Commands preceeding Java
+    //jvmPrefix += "echo -e \"${project.brickPassword}\" | sudo -S "
+    jvmPrefix += "time "
+    //jvmPrefix += "brickrun -- "
 
+    // Java flags
+    //jvmFlags += "-Xlog:class+load=info,class+unload=info "
+    jvmFlags += "-Xshare:on "
+    //jvmFlags += "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false "
+
+    // Whether to deploy a big jar with dependencies included (=false) or a small jar with external dependencies (=true)
     slimJar = true
-    appCDS = true
 
-    jmxFlags =
-"-Dcom.sun.management.jmxremote=true\
- -Dcom.sun.management.jmxremote.port=7091\
- -Dcom.sun.management.jmxremote.authenticate=false\
- -Dcom.sun.management.jmxremote.ssl=false"
+    // Whether to enable experimental AppCDS caching
+    appCDS = false
 }

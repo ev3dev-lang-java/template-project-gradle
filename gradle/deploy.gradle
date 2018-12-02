@@ -10,232 +10,120 @@ remotes {
     }
 }
 
-ext.baseGroup = "ELJ-Basic"
-ext.remoteGroup = "ELJ-Remote"
+def baseGroup = "ELJ-Deployment"
 
 //////////////////
 // TASK HELPERS //
 //////////////////
 
-////////////////////////////////////////
-// Get classpath for runtime libraries
-project.ext.getLibraryClassPath = {
-    def dependenciesPath = ""
-
-    configurations.runtime.each {
-        dependenciesPath += ":${project.externalJarsPath}/${it.name}"
-    }
-
-    return dependenciesPath.substring(1)
-}
-
 /////////////////////////////////
 // Get classpath for a Slim JAR
 project.ext.getSlimClassPath = {
-    return "${ project.userJarPath() }:${ project.getLibraryClassPath() }"
+    def dependenciesPath = "${ project.userJarPath() }"
+
+    configurations.runtime.each {
+        dependenciesPath += ":${ project.externalJarsPath }/${ it.name }"
+    }
+
+    return dependenciesPath
 }
 
 ////////////////////////////////////////
 // Get command line for java execution
-// named arguments:
-//  - sudo: whether prepend java with sudo
-//  - time: whether prepend java with time
-//  - brickrun: whether to prepend java with brickrun
-//  - verboseClass: whether to debug class loading
-//  - jmx: whether to activate the management agent
-def getJavaCommand(Map map) {
-    def cmdLine = ""
-    if (map.sudo) {
-        cmdLine += "echo -e \"${project.brickPassword}\" | sudo -S "
-    }
-    if (map.time) {
-        cmdLine += "time "
-    }
-    if (map.brickrun) {
-        cmdLine += "brickrun -- "
-    }
-    cmdLine += "java "
-    cmdLine += jvmFlags + " "
+def getJavaCommand() {
+    def cdsLine = ""
+    def specArgs = ""
     if (project.appCDS) {
-        cmdLine += "-XX:+UnlockDiagnosticVMOptions -XX:+UseAppCDS -XX:SharedArchiveFile=${project.appcdsJsaPath()} "
-    }
-    if (map.verboseClass) {
-        cmdLine += "-Xlog:class+load=info,class+unload=info "
-    }
-    if (map.jmx) {
-        cmdLine += jmxFlags + " "
+        cdsLine = "-XX:+UnlockDiagnosticVMOptions -XX:+UseAppCDS -XX:SharedArchiveFile=${project.appcdsJsaPath()}"
     }
     if (project.slimJar) {
-        cmdLine += "-cp \"${project.getSlimClassPath()}\" ${project.mainClass}"
+        specArgs = "-cp \"${project.getSlimClassPath()}\" ${project.mainClass}"
     } else {
-        cmdLine += "-jar ${project.userJarPath()}"
+        specArgs = "-jar ${project.userJarPath()}"
     }
-    return cmdLine
-}
-
-////////////////////////////////////////
-// Get command line for java execution
-// normal arguments:
-//  - deploy: whether to prepend the name with deployAnd or remote
-// named arguments:
-//  - sudo: add Sudo to name
-//  - brickrun: add Brick to name
-//  - verboseClass: add Classload to name
-//  - jmx: add Profiling to name
-def getTaskName(Map map, deploy = false) {
-    def name = ""
-
-    if (deploy) {
-        name += "deployAnd"
-    } else {
-        name += "remote"
-    }
-
-    if (map.jmx) {
-        name += "Profiling"
-    }
-    if (map.sudo) {
-        name += "Sudo"
-    }
-    if (map.brickrun) {
-        name += "Brick"
-    }
-    name += "Run"
-    if (map.verboseClass) {
-        name += "Classload"
-    }
-    return name
-}
-
-/////////////////////
-// WRAPPER SUPPORT //
-/////////////////////
-
-task templateWrapperSlim(type: Copy) {
-    from "${project.rootDir}/gradle/"
-    into "${project.rootDir}/build/"
-    include 'launcher-simple.sh.template'
-    rename { file -> 'launcher.sh' }
-
-    def flags = "$jvmFlags "
-    if (project.appCDS) {
-        flags += "-XX:+UnlockDiagnosticVMOptions -XX:+UseAppCDS -XX:SharedArchiveFile=${project.appcdsJsaPath()} "
-    }
-
-    expand(mode: "jarpath", java_opts: "$flags", classpath: "${project.getSlimClassPath()}", mainclass: "$mainClass")
-}
-
-task templateWrapperFat(type: Copy) {
-    from "${project.rootDir}/gradle/"
-    into "${project.rootDir}/build/"
-    include 'launcher-simple.sh.template'
-    rename { file -> 'launcher.sh' }
-    expand(mode: "jarmain", java_opts: "$jvmFlags", jar: "${project.userJarPath()}")
-}
-
-///////////////////
-// TASK CREATION //
-///////////////////
-
-//////////////////////
-// Create a Run task
-// named arguments:
-//  - sudo: is this a sudo run?
-//  - time: is this a timed run?
-//  - brickrun: is this a brickrun run?
-//  - verboseClass: is class loading debug wanted?
-//  - jmx: is JMX agent activation wanted?
-def createRunTask(Map map) {
-    def onlyRunName = getTaskName(map, false)
-    def andDeployName = getTaskName(map, true)
-
-    task "$andDeployName" {
-        group "${project.remoteGroup}"
-        dependsOn "deploy", "$onlyRunName"
-        doLast {}
-    }
-
-    task "$onlyRunName" {
-        group "${project.remoteGroup}"
-        doLast {
-            ssh.run {
-                session(remotes.ev3dev) {
-                    sshPrint(delegate, "${getJavaCommand(map)}")
-                }
-            }
-        }
-    }
-}
-
-/////////////////////////
-// Create a Deploy task
-// named arguments:
-//  - slim: deployment type
-def createDeployTask(Map map) {
-    def wrapperPath = project.userWrapperPath()
-
-    def artifactType, wrapperTask, jarName
-    if (project.slimJar) {
-        artifactType = "jar"
-        wrapperTask = "templateWrapperSlim"
-        jarName = "${rootProject.name}-${version}.jar"
-    } else {
-        artifactType = "fatJar"
-        wrapperTask = "templateWrapperFat"
-        jarName = "${rootProject.name}-${version}-all.jar"
-    }
-
-    task "deploy" {
-        group "${project.remoteGroup}"
-        dependsOn clean, "$artifactType", "$wrapperTask"
-        doLast {
-            ssh.run {
-                session(remotes.ev3dev) {
-                    sshPrint(delegate, "mkdir -p ${project.userJarsPath}/")
-                    println "Uploading $jarName"
-                    put from: "${project.rootDir}/build/libs/$jarName", into: "${project.userJarsPath}"
-                    put from: "${project.rootDir}/build/launcher.sh", into: "$wrapperPath"
-                    sshPrint(delegate, "chmod +x \"$wrapperPath\"")
-                }
-            }
-        }
-    }
-}
-
-////////////////////////
-// Create a Basic task
-// normal arguments:
-//  - name: task name
-//  - command: command to be executed
-def createBasicTask(name, command) {
-    task "$name" {
-        group rootProject.baseGroup
-        doLast {
-            ssh.run {
-                session(remotes.ev3dev) {
-                    sshPrint(delegate, "$command")
-                }
-            }
-        }
-    }
+    return "$jvmPrefix java $jvmFlags $cdsLine $specArgs"
 }
 
 /////////////
 // GENERAL //
 /////////////
 
-createBasicTask("testConnection", "ls")
-createBasicTask("pkillJava", "pkill java")
-createBasicTask("removePreviousJar", "rm -f ${project.userJarPath()}")
+project.createCommandTask(baseGroup, "testConnection", "ls", "Test connection to the brick.")
+project.createCommandTask(baseGroup, "pkillJava", "pkill java", "Kill running Java instances.")
+project.createCommandTask(baseGroup, "undeploy",
+    "rm -f ${project.userJarPath()} ${project.userWrapperPath()}",
+    "Remove previously uploaded JAR.")
 
-////////////////
-// FAT BUILDS //
-////////////////
+///////////
+// TASKS //
+///////////
 
-createDeployTask()
-createRunTask(time: true)
-createRunTask(time: true, brickrun: true)
-createRunTask(verboseClass: true)
-createRunTask(sudo: true)
-createRunTask(jmx: true, brickrun: true)
-createRunTask(jmx: true, brickrun: true, sudo: true)
+task templateWrapper(type: Copy) {
+    from "${project.rootDir}/gradle/"
+    into "${project.rootDir}/build/"
+    include 'launcher-simple.sh.template'
+    rename { file -> 'launcher.sh' }
+
+    expand(command: getJavaCommand())
+}
+
+task run {
+    group baseGroup
+    description "Run the program that is currently loaded on the brick."
+    doLast {
+        ssh.run {
+            session(remotes.ev3dev) {
+                project.sshPrint(delegate, "${getJavaCommand()}")
+            }
+        }
+    }
+}
+
+task deploy {
+    group baseGroup
+    description "Deploy a new build of the program to the brick."
+    dependsOn clean
+    dependsOn templateWrapper
+    dependsOn project.slimJar ? "jar" : "fatJar"
+    doLast {
+        def wrapperPath = project.userWrapperPath()
+        def jarName = project.slimJar ? "${rootProject.name}-${version}.jar" : "${rootProject.name}-${version}-all.jar"
+
+        ssh.run {
+            session(remotes.ev3dev) {
+                println "Uploading $jarName"
+                project.sshPrint(delegate, "mkdir -p ${project.userJarsPath}/")
+                put from: "${project.rootDir}/build/libs/$jarName", into: "${project.userJarsPath}"
+                put from: "${project.rootDir}/build/launcher.sh", into: "$wrapperPath"
+                project.sshPrint(delegate, "chmod +x \"$wrapperPath\"")
+            }
+        }
+    }
+}
+
+task deployRun {
+    group baseGroup
+    description "Deploy a new build of the program to the brick and then run it."
+    dependsOn deploy, run
+    doLast {}
+}
+
+if (project.appCDS) {
+    task deployAppCDS {
+        group baseGroup
+        description "Deploys the program and performs AppCDS class data dump."
+        dependsOn deploy
+        doLast {
+            ssh.run {
+                session(remotes.ev3dev) {
+                    project.sshPrint(delegate, "java \
+                                            -cp \"${project.getSlimClassPath()}\" \
+                                            -XX:+UnlockDiagnosticVMOptions -XX:+UseAppCDS \
+                                            -Xshare:dump \
+                                            -XX:SharedClassListFile=${project.appcdsLstPath()} \
+                                            -XX:SharedArchiveFile=${project.appcdsJsaPath()}")
+                }
+            }
+        }
+    }
+}

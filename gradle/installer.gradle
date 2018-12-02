@@ -6,70 +6,34 @@ def installerGroup = "ELJ-Installer"
 
 task getInstaller {
     group installerGroup
+    description "Download component installer on the brick."
     doLast {
         ssh.run {
             session(remotes.ev3dev) {
-                sshPrint(delegate, "mkdir -p /home/robot/java")
-                sshPrint(delegate,  "wget -N https://raw.githubusercontent.com/ev3dev-lang-java/installer/master/installer.sh -O /home/robot/java/installer.sh")
-                sshPrint(delegate,  "chmod +x /home/robot/java/installer.sh")
+                project.sshPrint(delegate, "mkdir -p /home/robot/java")
+                project.sshPrint(delegate, "wget -N https://raw.githubusercontent.com/ev3dev-lang-java/installer/master/installer.sh -O /home/robot/java/installer.sh")
+                project.sshPrint(delegate, "chmod +x /home/robot/java/installer.sh")
             }
         }
     }
 }
 
-task helpInstall {
-    group installerGroup
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                sshPrint(delegate, "/home/robot/java/installer.sh help")
-            }
-        }
-    }
-}
+project.createCommandTask(installerGroup, "helpInstall",
+    "/home/robot/java/installer.sh help", 
+    "Print the installer help.")
 
-task installJava {
-    group installerGroup
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S /home/robot/java/installer.sh java")
-            }
-        }
-    }
-}
+project.createSudoCommandTask(installerGroup, "installJava",
+    "/home/robot/java/installer.sh java",
+    "Install Java on the brick.")
 
-task installNativeLibraries {
-    group installerGroup
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S /home/robot/java/installer.sh nativeLibs")
-            }
-        }
-    }
-}
+project.createSudoCommandTask(installerGroup, "installNativeLibraries",
+    "/home/robot/java/installer.sh nativeLibs",
+    "Install native libraries on the brick.")
 
-task installJavaLibraries {
-    group installerGroup
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                sshPrint(delegate, "echo -e \"${project.brickPassword}\" | sudo -S /home/robot/java/installer.sh javaLibs")
-            }
-        }
-    }
-}
+project.createSudoCommandTask(installerGroup, "installJavaLibraries",
+    "/home/robot/java/installer.sh javaLibs",
+    "Install Java libraries on the brick.")
 
-task javaVersion {
-    group installerGroup
-    doLast {
-        ssh.run {
-            session(remotes.ev3dev) {
-                sshPrint(delegate, "java -version")
-            }
-        }
-    }
-}
-
-apply from: './config.gradle'
+project.createCommandTask(installerGroup, "javaVersion",
+    "java -version",
+    "Print Java version which is present on the brick.")

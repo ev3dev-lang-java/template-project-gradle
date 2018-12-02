@@ -60,38 +60,7 @@ jar {
     }
 }
 
-task fatJar {
-    dependsOn shadowJar
-    doLast {}
-}
-
-def sshPrint(delegate, command) {
-    delegate.execute("echo ' --- Running command: \"" + command + "\" ---'")
-    delegate.execute(command)
-}
-
-// Directory paths
-project.ext.externalJarsPath = "/home/robot/java/libraries"
-project.ext.userJarsPath = "/home/robot/java/programs"
-project.ext.userWrappersPath = "/home/robot"
-project.ext.appcdsPath = "/home/robot/java/appcds"
-project.ext.appcdsLstPath = {
-    return "/home/robot/java/appcds/all.lst"
-}
-project.ext.appcdsJsaPath = {
-    return "/home/robot/java/appcds/${rootProject.name}-${version}.jsa"
-}
-
-project.ext.userJarPath = {
-    def suffix = project.slimJar ? "" : "-all";
-    return "${project.userJarsPath}/${rootProject.name}-${version}${suffix}.jar";
-}
-
-project.ext.userWrapperPath = {
-    def suffix = project.slimJar ? "" : "-all";
-    return "${project.userWrappersPath}/${rootProject.name}-${version}${suffix}.sh";
-}
-
+apply from: './gradle/utility.gradle'
 apply from: './gradle/deploy.gradle'
 apply from: './gradle/ev3dev.gradle'
 apply from: './gradle/installer.gradle'
