@@ -1,0 +1,15 @@
+language: java
+jdk:
+  - openjdk10
+before_install:
+  - chmod +x gradlew
+notifications:
+  email:
+    on_success: always
+    on_failure: always
+    recipients:
+      - bren@juanantonio.info
+script:
+  - ./gradlew clean classes
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
