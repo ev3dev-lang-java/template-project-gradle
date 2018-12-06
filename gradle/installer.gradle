@@ -11,7 +11,7 @@ task getInstaller {
         ssh.run {
             session(remotes.ev3dev) {
                 project.sshPrint(delegate, "mkdir -p /home/robot/java")
-                project.sshPrint(delegate, "wget https://raw.githubusercontent.com/ev3dev-lang-java/installer/master/installer.sh -O /home/robot/java/installer.sh")
+                project.sshPrint(delegate, "/bin/sh -c 'if grep -i jessie /etc/os-release; then wget https://raw.githubusercontent.com/ev3dev-lang-java/installer/master/installer-jessie.sh -O /home/robot/java/installer.sh; else wget https://raw.githubusercontent.com/ev3dev-lang-java/installer/master/installer.sh -O /home/robot/java/installer.sh; fi'")
                 project.sshPrint(delegate, "chmod +x /home/robot/java/installer.sh")
             }
         }
