@@ -15,7 +15,6 @@ public class FractalCircle {
 
     public static Logger LOGGER = LoggerFactory.getLogger(FractalCircle.class);
 
-
     private GraphicsLCD lcd;
 
     public FractalCircle() {
