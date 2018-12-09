@@ -15,7 +15,7 @@ buildscript {
     }
 }
 
-version = '2.4.17'
+version = '2.5.3'
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
@@ -42,7 +42,7 @@ repositories {
 
 dependencies {
     compile("org.slf4j:slf4j-simple:1.7.25")
-    compile("com.github.ev3dev-lang-java:ev3dev-lang-java:2.4.16")
+    compile("com.github.ev3dev-lang-java:ev3dev-lang-java:2.5.3")
 }
 
 compileJava.options.encoding = 'UTF-8'

@@ -17,10 +17,15 @@ project.ext {
     sudo = false
 
     // Java flags
-    //jvmFlags += "-Xlog:class+load=info,class+unload=info "
+    jvmFlags += "-Xms64m -Xmx64m "
+
+    //jvmFlags += "-Xlog:gc*=info:stderr "
+    jvmFlags += "-XX:+UseSerialGC "
+    //jvmFlags += "-XX:+UseParallelGC "
+    //jvmFlags += "-XX:+UseG1GC "
+
     jvmFlags += "-Xshare:on "
     jvmFlags += "-noverify "
-    jvmFlags += "-XX:TieredStopAtLevel=1 "
     //jvmFlags += "-Djava.security.egd=file:/dev/./urandom "
     //jvmFlags += "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false "
 
