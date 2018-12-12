@@ -43,7 +43,7 @@ OpenJDK JRI is preinstalled in the default image, so you only need to install ev
 ```
 If you want to use RXTX or OpenCV, you can install them this way:
 ```bash
-./gradlew installNativeLibraries
+./gradlew updateAPT installNativeLibraries
 ```
 
 ### Other platforms
