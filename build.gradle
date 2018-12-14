@@ -37,12 +37,19 @@ task wrapper(type: Wrapper) {
 
 repositories {
     maven { url "https://jitpack.io" }
+    maven { url "http://repo.opennms.org/maven2/" }
     mavenCentral()
 }
 
 dependencies {
-    compile("org.slf4j:slf4j-simple:1.7.25")
-    compile("com.github.ev3dev-lang-java:ev3dev-lang-java:2.5.3")
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+    compile group: 'com.github.ev3dev-lang-java', name: 'ev3dev-lang-java', version: '2.5.3'
+
+    if (project.ext.has("opencv") && project.ext.opencv)
+        compileOnly group: 'org.openpnp', name: 'opencv', version: '2.4.9-8'
+
+    if (project.ext.has("rxtx")   && project.ext.rxtx)
+        compileOnly group: 'org.rxtx', name: 'rxtx', version: '2.2pre2', ext: 'pom'
 }
 
 compileJava.options.encoding = 'UTF-8'
@@ -58,7 +65,8 @@ jar {
     manifest {
         attributes("Implementation-Title": project.name,
                    "Implementation-Version": version,
-                   "Main-Class": project.mainClass)
+                   "Main-Class": project.mainClass,
+                   "Class-Path": project.getJarClassPath() )
     }
 }
 

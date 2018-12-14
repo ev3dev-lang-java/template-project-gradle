@@ -9,6 +9,13 @@ project.ext {
     brickUser = "robot"
     brickPassword = "maker"
 
+    // some common libraries
+    opencv = true
+    rxtx = true
+    // additional classpath entries
+    // userClasspath = [ "file:///path/to/a.jar", "file:///path/to/b.jar" ]
+    userClasspath = []
+
     // Commands preceding Java
     jvmPrefix += "time "
     //jvmPrefix += "brickrun -- "

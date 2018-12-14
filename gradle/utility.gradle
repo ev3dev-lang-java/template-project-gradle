@@ -17,6 +17,8 @@ project.ext.splashPath = "/home/robot/java/splash.txt"
 project.ext.appcdsPath = "/home/robot/java/appcds"
 project.ext.appcdsLstPath = { return "/home/robot/java/appcds/all.lst" }
 project.ext.appcdsJsaPath = { return "/home/robot/java/appcds/${rootProject.name}-${version}.jsa" }
+project.ext.opencvJar = "/usr/share/java/opencv.jar"
+project.ext.rxtxJar = "/usr/share/java/RXTXcomm.jar"
 project.ext.userJarPath = {
     def suffix = project.slimJar ? "" : "-all";
     return "${project.userJarsPath}/${rootProject.name}-${version}${suffix}.jar";
@@ -46,6 +48,7 @@ project.ext.createCommandTask = { grpName, name, command, desc = "" ->
         }
     }
 }
+
 //////////////////////////////////
 // Create a Basic task with Sudo
 // normal arguments:
@@ -55,4 +58,30 @@ project.ext.createCommandTask = { grpName, name, command, desc = "" ->
 //  - desc:    optional task description
 project.ext.createSudoCommandTask = { grpName, name, command, desc = "" ->
     project.createCommandTask(grpName, name, "echo -e \"${project.brickPassword}\" | sudo -S $command", desc)
+}
+
+/////////////////////////////
+// Determine JAR class-path
+project.ext.getJarClassPath = {
+    def jarList = []
+
+    if (project.slimJar) {
+        configurations.runtime.each {
+            jarList += "file://${ project.externalJarsPath }/${ it.name }"
+        }
+    }
+
+    if (project.ext.has("opencv") && project.ext.opencv) {
+        jarList += "file://${project.opencvJar}"
+    }
+
+    if (project.ext.has("rxtx") && project.ext.rxtx) {
+        jarList += "file://${project.rxtxJar}"
+    }
+
+    if (project.ext.has("userClasspath")) {
+        jarList += project.ext.userClasspath
+    }
+
+    return jarList.join(" ")
 }
