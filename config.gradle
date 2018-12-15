@@ -1,10 +1,10 @@
 // Project configuration
 project.ext {
 
-    // Main class
+    // Main class //
     mainClass = "example.programming.HelloWorld"
 
-    // Brick connection parameters
+    // Brick connection parameters //
     brickHost = "192.168.2.4"
     brickUser = "robot"
     brickPassword = "maker"
@@ -14,25 +14,29 @@ project.ext {
     rxtx = true
     // userClasspath += "file:///path/to/a.jar"
 
-    // Commands preceding Java
-    jvmPrefix += "time "
-    //jvmPrefix += "brickrun -- "
-
-    // Run a Java process as root
+    // Commands preceding Java //
     sudo = false
+    useTime = true
+    useBrickrun = false
 
-    // Java flags
-    jvmFlags += "-Xms64m -Xmx64m "
 
-    //jvmFlags += "-Xlog:gc*=info:stderr "
-    jvmFlags += "-XX:+UseSerialGC "
-    //jvmFlags += "-XX:+UseParallelGC "
-    //jvmFlags += "-XX:+UseG1GC "
+    // Java flags //
 
-    jvmFlags += "-Xshare:on "
-    jvmFlags += "-noverify "
-    //jvmFlags += "-Djava.security.egd=file:/dev/./urandom "
-    //jvmFlags += "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false "
+    jvmFlags += "-Xms64m"
+    jvmFlags += "-Xmx64m"
+
+    //jvmFlags += "-Xlog:gc*=info:stderr"
+    jvmFlags += "-XX:+UseSerialGC"
+    //jvmFlags += "-XX:+UseParallelGC"
+    //jvmFlags += "-XX:+UseG1GC"
+
+    jvmFlags += "-Xshare:on"
+    jvmFlags += "-noverify"
+    //jvmFlags += "-Djava.security.egd=file:/dev/./urandom"
+    //jvmFlags += "-Dcom.sun.management.jmxremote=true"
+    //jvmFlags += "-Dcom.sun.management.jmxremote.port=7091"
+    //jvmFlags += "-Dcom.sun.management.jmxremote.authenticate=false"
+    //jvmFlags += "-Dcom.sun.management.jmxremote.ssl=false"
 
     // JAR behaviour //
     slimJar = true
