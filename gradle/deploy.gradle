@@ -30,12 +30,17 @@ def getJavaCommand(wrapper) {
         specArgs = "-cp \"${project.getClassPath(false)}\" ${project.mainClass}"
     }
 
-    def prefixPart = jvmPrefix
-    if (wrapper) {
-        prefixPart = prefixPart.replaceAll("brickrun( --)?", "").replaceAll("time", "")
+    def prefixPart = ""
+    if (!wrapper) {
+        if (project.useTime) {
+            prefixPart += "time "
+        }
+        if (project.useBrickrun) {
+            prefixPart += "brickrun -- "
+        }
     }
 
-    if (project.sudo) {
+    if (project.useSudo) {
         def sudoPart = "echo \"${project.brickPassword}\" | sudo -S"
         def shLine = ("$sudoPart java $jvmFlags $cdsLine $specArgs").replaceAll("\"","\\\\\"")
         return "$prefixPart /bin/sh -c \"$shLine\""

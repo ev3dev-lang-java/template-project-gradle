@@ -1,4 +1,3 @@
-project.ext.jvmPrefix = ""
 project.ext.jvmFlags = ""
 project.ext.userClasspath = []
 
