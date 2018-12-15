@@ -14,12 +14,10 @@ project.ext {
     rxtx = false
     // userClasspath += "file:///path/to/a.jar"
 
-    // Commands preceding Java
-    jvmPrefix += "time "
-    //jvmPrefix += "brickrun -- "
-
-    // Run a Java process as root
-    sudo = false
+    // Commands preceding Java //
+    useSudo = false
+    useTime = true
+    useBrickrun = false
 
     // Java flags
     jvmFlags += "-Xms64m -Xmx64m "
