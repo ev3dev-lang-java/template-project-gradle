@@ -63,6 +63,7 @@ You can change the project configuration in `config.gradle`.
 - `brickHost` - IP address of your brick.
 - `brickUser` - Username on your brick.
 - `brickPassword` - Password for the `brickUser`.
+- `userClasspath` - List of additional URLs for runtime Java classpath.
 - `jvmPrefix` - Commands which are prepended before the Java itself. **Keep at least one space character after each command.**
   - `time ` - Can be used to measure the time for which the program runs.
   - `brickrun -- ` - Should be used when running the program on a brick with a display.
@@ -75,6 +76,7 @@ You can change the project configuration in `config.gradle`.
   - `-XX:TieredStopAtLevel=1 ` - Do not perform many optimizations. This can be used to speed up startup time.
   - `-Djava.security.egd=file:/dev/./urandom ` - This can be used to speed up random number generation.
 - `slimJar` - Whether to generate a small JAR with external dependencies, or rather to generate a fat jar with embedded dependencies.
+- `useEmbeddedPaths` - Whehter to use classpath and mainclass embedded in JAR or if they should be supplied on the command line.
 
 ## Gradle Tasks
 

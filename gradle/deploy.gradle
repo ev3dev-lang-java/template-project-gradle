@@ -16,18 +16,6 @@ def baseGroup = "ELJ-Deployment"
 // TASK HELPERS //
 //////////////////
 
-/////////////////////////////////
-// Get classpath for a Slim JAR
-project.ext.getSlimClassPath = {
-    def dependenciesPath = "${ project.userJarPath() }"
-
-    configurations.runtime.each {
-        dependenciesPath += ":${ project.externalJarsPath }/${ it.name }"
-    }
-
-    return dependenciesPath
-}
-
 ////////////////////////////////////////
 // Get command line for java execution
 def getJavaCommand(wrapper) {
@@ -36,10 +24,10 @@ def getJavaCommand(wrapper) {
     if (project.appCDS) {
         cdsLine = "-XX:+UnlockDiagnosticVMOptions -XX:+UseAppCDS -XX:SharedArchiveFile=${project.appcdsJsaPath()}"
     }
-    if (project.slimJar) {
-        specArgs = "-cp \"${project.getSlimClassPath()}\" ${project.mainClass}"
-    } else {
+    if (project.useEmbeddedPaths) {
         specArgs = "-jar ${project.userJarPath()}"
+    } else {
+        specArgs = "-cp \"${project.getClassPath(false)}\" ${project.mainClass}"
     }
 
     def prefixPart = jvmPrefix
@@ -137,7 +125,7 @@ if (project.appCDS) {
             ssh.run {
                 session(remotes.ev3dev) {
                     project.sshPrint(delegate, "java \
-                                            -cp \"${project.getSlimClassPath()}\" \
+                                            -cp \"${project.getClassPath(false)}\" \
                                             -XX:+UnlockDiagnosticVMOptions -XX:+UseAppCDS \
                                             -Xshare:dump \
                                             -XX:SharedClassListFile=${project.appcdsLstPath()} \
