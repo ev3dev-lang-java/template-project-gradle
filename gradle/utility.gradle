@@ -62,12 +62,16 @@ project.ext.createSudoCommandTask = { grpName, name, command, desc = "" ->
 
 /////////////////////////////
 // Determine JAR class-path
-project.ext.getJarClassPath = {
+project.ext.getClassPath = { forJar ->
     def jarList = []
 
     if (project.slimJar) {
         configurations.runtime.each {
-            jarList += "file://${ project.externalJarsPath }/${ it.name }"
+            if (forJar) {
+                jarList += "file://${ project.externalJarsPath }/${ it.name }"
+            } else {
+                jarList += "${ project.externalJarsPath }/${ it.name }"
+            }
         }
     }
 
@@ -83,5 +87,10 @@ project.ext.getJarClassPath = {
         jarList += project.ext.userClasspath
     }
 
-    return jarList.join(" ")
+    if (forJar) {
+        return jarList.join(" ")
+    } else {
+        jarList += userJarPath()
+        return jarList.join(":")
+    }
 }

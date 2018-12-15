@@ -24,7 +24,11 @@ def getJavaCommand(wrapper) {
     if (project.appCDS) {
         cdsLine = "-XX:+UnlockDiagnosticVMOptions -XX:+UseAppCDS -XX:SharedArchiveFile=${project.appcdsJsaPath()}"
     }
-    specArgs = "-jar ${project.userJarPath()}"
+    if (project.useEmbeddedPaths) {
+        specArgs = "-jar ${project.userJarPath()}"
+    } else {
+        specArgs = "-cp \"${project.getClassPath(false)}\" ${project.mainClass}"
+    }
 
     def prefixPart = jvmPrefix
     if (wrapper) {
@@ -121,11 +125,11 @@ if (project.appCDS) {
             ssh.run {
                 session(remotes.ev3dev) {
                     project.sshPrint(delegate, "java \
+                                            -cp \"${project.getClassPath(false)}\" \
                                             -XX:+UnlockDiagnosticVMOptions -XX:+UseAppCDS \
                                             -Xshare:dump \
                                             -XX:SharedClassListFile=${project.appcdsLstPath()} \
-                                            -XX:SharedArchiveFile=${project.appcdsJsaPath()} \
-                                            -jar ${ project.userJarPath() }")
+                                            -XX:SharedArchiveFile=${project.appcdsJsaPath()}")
                 }
             }
         }

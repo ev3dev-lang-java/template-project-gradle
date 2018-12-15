@@ -38,4 +38,6 @@ project.ext {
 
     // Slim | FatJar
     slimJar = true
+    // Use paths from JAR directly from project
+    useEmbeddedPaths = true
 }
