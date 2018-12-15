@@ -18,6 +18,8 @@ project.ext.splashPath = "/home/robot/java/splash.txt"
 project.ext.appcdsPath = "/home/robot/java/appcds"
 project.ext.appcdsLstPath = { return "/home/robot/java/appcds/all.lst" }
 project.ext.appcdsJsaPath = { return "/home/robot/java/appcds/${rootProject.name}-${version}.jsa" }
+project.ext.opencvJar = "/usr/share/java/opencv.jar"
+project.ext.rxtxJar = "/usr/share/java/RXTXcomm.jar"
 project.ext.userJarPath = {
     def suffix = project.slimJar ? "" : "-all";
     return "${project.userJarsPath}/${rootProject.name}-${version}${suffix}.jar";
@@ -87,6 +89,14 @@ project.ext.getClassPath = { forJar ->
                 jarList += "${ project.externalJarsPath }/${ it.name }"
             }
         }
+    }
+
+    if (project.ext.has("opencv") && project.ext.opencv) {
+        jarList += filterClassURL(forJar, "file://${project.opencvJar}")
+    }
+
+    if (project.ext.has("rxtx") && project.ext.rxtx) {
+        jarList += filterClassURL(forJar, "file://${project.rxtxJar}")
     }
 
     if (project.ext.has("userClasspath")) {

@@ -10,6 +10,8 @@ project.ext {
     brickPassword = "maker"
 
     // Library section //
+    opencv = false
+    rxtx = false
     // userClasspath += "file:///path/to/a.jar"
 
     // Commands preceding Java

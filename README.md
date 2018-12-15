@@ -63,6 +63,8 @@ You can change the project configuration in `config.gradle`.
 - `brickHost` - IP address of your brick.
 - `brickUser` - Username on your brick.
 - `brickPassword` - Password for the `brickUser`.
+- `opencv` - Whether to include OpenCV libraries.
+- `rxtx` - Whether to include RXTX library.
 - `userClasspath` - List of additional URLs for runtime Java classpath.
 - `jvmPrefix` - Commands which are prepended before the Java itself. **Keep at least one space character after each command.**
   - `time ` - Can be used to measure the time for which the program runs.
