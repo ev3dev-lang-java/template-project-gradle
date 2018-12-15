@@ -6,7 +6,7 @@ project.ext.userClasspath = []
 project.ext.appCDS = false
 
 project.ext.sshPrint = { delegate, command ->
-    delegate.execute("echo ' --- Running command: \"" + command + "\" ---'")
+    delegate.execute("echo ' --- Running command: \"" + command.replaceAll(project.brickPassword, "********") + "\" ---'")
     delegate.execute(command)
 }
 
