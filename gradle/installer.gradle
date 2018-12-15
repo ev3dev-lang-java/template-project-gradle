@@ -36,9 +36,13 @@ project.createSudoCommandTask(installerGroup, "installJava",
     "/home/robot/java/installer.sh java",
     "Install Java on the brick.")
 
-project.createSudoCommandTask(installerGroup, "installNativeLibraries",
-    "/home/robot/java/installer.sh nativeLibs",
-    "Install native libraries on the brick.")
+project.createSudoCommandTask(installerGroup, "installOpenCV",
+    "/home/robot/java/installer.sh opencv",
+    "Install OpenCV libraries on the brick.")
+
+project.createSudoCommandTask(installerGroup, "installRXTX",
+    "/home/robot/java/installer.sh rxtx",
+    "Install RXTX library on the brick.")
 
 project.createSudoCommandTask(installerGroup, "installJavaLibraries",
     "/home/robot/java/installer.sh javaLibs",

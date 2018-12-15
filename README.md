@@ -43,7 +43,7 @@ OpenJDK JRI is preinstalled in the default image, so you only need to install ev
 ```
 If you want to use RXTX or OpenCV, you can install them this way:
 ```bash
-./gradlew updateAPT installNativeLibraries
+./gradlew updateAPT installOpenCV installRXTX
 ```
 
 ### Other platforms
@@ -53,7 +53,7 @@ On these platforms OpenJDK JRE needs to be installed from Debian repositories to
 ```
 If you want to use RXTX or OpenCV, you can again install them this way:
 ```bash
-./gradlew updateAPT installNativeLibraries
+./gradlew updateAPT installOpenCV installRXTX
 ```
 
 ## Configuration
@@ -103,7 +103,8 @@ You can use the Java IDE to launch the tasks or you can execute them from the te
 - `helpInstall` - Print the installer help.
 - `getInstaller` - Download the installer to the brick.
 - `installJava` - Install Java on the brick.
-- `installNativeLibraries` - Install native libraries on the brick.
+- `installOpenCV` - Install OpenCV libraries on the brick.
+- `installRXTX` - Install RXTX library on the brick.
 - `installJavaLibraries` - Install EV3Dev-lang-java libraries on the brick.
 - `javaVersion` - Print Java version which is present on the brick.
 - `updateAPT` - Update APT package cache.
