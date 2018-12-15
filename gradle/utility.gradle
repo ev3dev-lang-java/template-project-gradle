@@ -61,8 +61,23 @@ project.ext.createSudoCommandTask = { grpName, name, command, desc = "" ->
     project.createCommandTask(grpName, name, "echo -e \"${project.brickPassword}\" | sudo -S $command", desc)
 }
 
+//////////////////////////////////////////
+// Modify classpath URL for given target
+// - forJar - true  -> set up for MANIFEST.MF
+//          - false -> set up for -cp option
+// - url - class path entry to modify
+project.ext.filterClassURL = { forJar, url ->
+    if (forJar) {
+        return url
+    } else {
+        return url.replaceAll("^file://", "")
+    }
+}
+
 /////////////////////////////
 // Determine JAR class-path
+// - forJar - true  -> set up for MANIFEST.MF
+//          - false -> set up for -cp option
 project.ext.getClassPath = { forJar ->
     def jarList = []
 
@@ -77,15 +92,15 @@ project.ext.getClassPath = { forJar ->
     }
 
     if (project.ext.has("opencv") && project.ext.opencv) {
-        jarList += "file://${project.opencvJar}"
+        jarList += filterClassURL(forJar, "file://${project.opencvJar}")
     }
 
     if (project.ext.has("rxtx") && project.ext.rxtx) {
-        jarList += "file://${project.rxtxJar}"
+        jarList += filterClassURL(forJar, "file://${project.rxtxJar}")
     }
 
     if (project.ext.has("userClasspath")) {
-        jarList += project.ext.userClasspath
+        jarList += project.ext.userClasspath.collect { filterClassURL(forJar, it) }
     }
 
     if (forJar) {
