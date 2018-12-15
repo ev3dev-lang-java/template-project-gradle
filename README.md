@@ -69,7 +69,7 @@ You can change the project configuration in `config.gradle`.
 - `useTime` - Can be used to measure the time for which the program runs.
 - `useBrickman` - Should be used when running the program on a brick with a display.
 - `useSudo` - If true, the program is launched under root.
-- `jvmFlags` - Flags for Java **Keep at least one space character after each flag.**
+- `jvmFlags` - Flags for Java Virtual Machine.
   - `-Xlog:class+load=info,class+unload=info ` - Display the debugging info for class loading.
   - `-Xshare:on ` - Enable Class Data Sharing (recommended).
   - `-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false ` - Enable JMX agent.
