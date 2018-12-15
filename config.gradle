@@ -9,6 +9,9 @@ project.ext {
     brickUser = "robot"
     brickPassword = "maker"
 
+    // Library section //
+    // userClasspath += "file:///path/to/a.jar"
+
     // Commands preceding Java
     jvmPrefix += "time "
     //jvmPrefix += "brickrun -- "
@@ -29,6 +32,7 @@ project.ext {
     //jvmFlags += "-Djava.security.egd=file:/dev/./urandom "
     //jvmFlags += "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false "
 
-    // Slim | FatJar
+    // JAR behaviour //
     slimJar = true
+    useEmbeddedPaths = false
 }

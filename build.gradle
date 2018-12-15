@@ -58,7 +58,8 @@ jar {
     manifest {
         attributes("Implementation-Title": project.name,
                    "Implementation-Version": version,
-                   "Main-Class": project.mainClass)
+                   "Main-Class": project.mainClass,
+                   "Class-Path": project.getClassPath(true) )
     }
 }
 
