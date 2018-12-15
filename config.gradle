@@ -9,12 +9,10 @@ project.ext {
     brickUser = "robot"
     brickPassword = "maker"
 
-    // some common libraries
+    // Library section //
     opencv = true
     rxtx = true
-    // additional classpath entries
-    // userClasspath = [ "file:///path/to/a.jar", "file:///path/to/b.jar" ]
-    userClasspath = []
+    // userClasspath += "file:///path/to/a.jar"
 
     // Commands preceding Java
     jvmPrefix += "time "
@@ -36,8 +34,7 @@ project.ext {
     //jvmFlags += "-Djava.security.egd=file:/dev/./urandom "
     //jvmFlags += "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false "
 
-    // Slim | FatJar
+    // JAR behaviour //
     slimJar = true
-    // Use paths from JAR directly from project
     useEmbeddedPaths = true
 }

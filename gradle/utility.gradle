@@ -1,5 +1,6 @@
 project.ext.jvmPrefix = ""
 project.ext.jvmFlags = ""
+project.ext.userClasspath = []
 
 // Whether to enable experimental AppCDS caching
 project.ext.appCDS = false
