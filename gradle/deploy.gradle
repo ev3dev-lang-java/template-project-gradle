@@ -19,33 +19,37 @@ def baseGroup = "ELJ-Deployment"
 ////////////////////////////////////////
 // Get command line for java execution
 def getJavaCommand(wrapper) {
-    def cdsLine = ""
-    def specArgs = ""
+    def javaArr = ["java"]
+    javaArr += jvmFlags
+
     if (project.appCDS) {
-        cdsLine = "-XX:+UnlockDiagnosticVMOptions -XX:+UseAppCDS -XX:SharedArchiveFile=${project.appcdsJsaPath()}"
+        javaArr += "-XX:+UnlockDiagnosticVMOptions"
+        javaArr += "-XX:+UseAppCDS"
+        javaArr += "-XX:SharedArchiveFile=${project.appcdsJsaPath()}"
     }
     if (project.useEmbeddedPaths) {
-        specArgs = "-jar ${project.userJarPath()}"
+        javaArr += "-jar ${project.userJarPath()}"
     } else {
-        specArgs = "-cp \"${project.getClassPath(false)}\" ${project.mainClass}"
+        javaArr += "-cp \"${project.getClassPath(false)}\""
+        javaArr += "${project.mainClass}"
     }
 
-    def prefixPart = ""
+    def prefixArr = []
     if (!wrapper) {
         if (project.useTime) {
-            prefixPart += "time "
+            prefixArr += "time"
         }
         if (project.useBrickrun) {
-            prefixPart += "brickrun -- "
+            prefixArr += "brickrun --"
         }
     }
 
     if (project.useSudo) {
-        def sudoPart = "echo \"${project.brickPassword}\" | sudo -S"
-        def shLine = ("$sudoPart java $jvmFlags $cdsLine $specArgs").replaceAll("\"","\\\\\"")
-        return "$prefixPart /bin/sh -c \"$shLine\""
+        def javaCmd = javaArr.join(" ")
+        def shLine = ("echo \"${project.brickPassword}\" | sudo -S $javaCmd").replaceAll("\"","\\\\\"")
+        return (prefixArr + "/bin/sh -c \"$shLine\"").join(" ")
     } else {
-        return "$prefixPart java $jvmFlags $cdsLine $specArgs"
+        return (prefixArr + javaArr).join(" ")
     }
 }
 
