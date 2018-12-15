@@ -34,5 +34,5 @@ project.ext {
 
     // JAR behaviour //
     slimJar = true
-    useEmbeddedPaths = true
+    useEmbeddedPaths = false
 }
