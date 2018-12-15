@@ -15,7 +15,7 @@ project.ext {
     // userClasspath += "file:///path/to/a.jar"
 
     // Commands preceding Java //
-    sudo = false
+    useSudo = false
     useTime = true
     useBrickrun = false
 

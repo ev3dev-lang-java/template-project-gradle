@@ -44,7 +44,7 @@ def getJavaCommand(wrapper) {
         }
     }
 
-    if (project.sudo) {
+    if (project.useSudo) {
         def javaCmd = javaArr.join(" ")
         def shLine = ("echo \"${project.brickPassword}\" | sudo -S $javaCmd").replaceAll("\"","\\\\\"")
         return (prefixArr + "/bin/sh -c \"$shLine\"").join(" ")
