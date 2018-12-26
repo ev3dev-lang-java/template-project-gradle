@@ -28,7 +28,7 @@ apply from: './gradle/utility.gradle'
 apply from: './config.gradle'
 
 // Gradle Wrapper
-task wrapper(type: Wrapper) {
+task wrapper2(type: Wrapper) {
     description = 'Generates gradlew[.bat] scripts'
     gradleVersion = '4.7'
 }
