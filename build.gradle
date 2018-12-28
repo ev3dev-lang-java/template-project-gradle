@@ -27,12 +27,6 @@ apply plugin: 'org.hidetake.ssh'
 apply from: './gradle/utility.gradle'
 apply from: './config.gradle'
 
-// Gradle Wrapper
-task wrapper2(type: Wrapper) {
-    description = 'Generates gradlew[.bat] scripts'
-    gradleVersion = '4.7'
-}
-
 // Project definitions
 
 repositories {
@@ -43,6 +37,7 @@ repositories {
 dependencies {
     compile("org.slf4j:slf4j-simple:1.7.25")
     compile("com.github.ev3dev-lang-java:ev3dev-lang-java:2.5.3")
+    compileOnly("nu.pattern:opencv:2.4.9-7")
 }
 
 compileJava.options.encoding = 'UTF-8'
