@@ -37,7 +37,6 @@ repositories {
 dependencies {
     compile("org.slf4j:slf4j-simple:1.7.25")
     compile("com.github.ev3dev-lang-java:ev3dev-lang-java:2.5.3")
-    compileOnly("nu.pattern:opencv:2.4.9-7")
 }
 
 compileJava.options.encoding = 'UTF-8'
