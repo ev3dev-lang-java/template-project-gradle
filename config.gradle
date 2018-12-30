@@ -1,18 +1,18 @@
 // Project configuration
-project.ext {
+brick.pref {
 
     // Main class //
     mainClass = "example.programming.HelloWorld"
 
     // Brick connection parameters //
-    brickHost = "192.168.2.4"
-    brickUser = "robot"
-    brickPassword = "maker"
+    sshHost = "192.168.2.4"
+    sshUser = "robot"
+    sshPassword = "maker"
 
     // Library section //
-    opencv = false
-    rxtx = false
-    // userClasspath += "file:///path/to/a.jar"
+    libOpenCV = false
+    libRXTX = false
+    // libCustom += "file:///path/to/a.jar"
 
     // Commands preceding Java //
     useSudo = false
