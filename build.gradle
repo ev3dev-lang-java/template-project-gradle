@@ -13,7 +13,7 @@ buildscript {
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.0'
         classpath "gradle.plugin.net.ossindex:ossindex-gradle-plugin:0.1.1"
         classpath "org.hidetake:gradle-ssh-plugin:2.0.0"
-        classpath "com.github.ev3dev-lang-java:gradle-plugin:1.5.0-SNAPSHOT"
+        classpath "com.github.ev3dev-lang-java:gradle-plugin:1.5.1"
     }
 }
 
