@@ -1,44 +1,10 @@
 // Project configuration
 brick.pref {
-
     // Main class //
     mainClass = "example.programming.HelloWorld"
 
     // Brick connection parameters //
-    sshHost = "192.168.2.4"
+    sshHost = "10.0.0.89"
     sshUser = "robot"
     sshPassword = "maker"
-
-    // Library section //
-    libOpenCV = false
-    libRXTX = false
-    // libCustom += "file:///path/to/a.jar"
-
-    // Commands preceding Java //
-    useSudo = false
-    useTime = true
-    useBrickrun = false
-
-
-    // Java flags //
-
-    jvmFlags += "-Xms64m"
-    jvmFlags += "-Xmx64m"
-
-    //jvmFlags += "-Xlog:gc*=info:stderr"
-    jvmFlags += "-XX:+UseSerialGC"
-    //jvmFlags += "-XX:+UseParallelGC"
-    //jvmFlags += "-XX:+UseG1GC"
-
-    jvmFlags += "-Xshare:on"
-    jvmFlags += "-noverify"
-    //jvmFlags += "-Djava.security.egd=file:/dev/./urandom"
-    //jvmFlags += "-Dcom.sun.management.jmxremote=true"
-    //jvmFlags += "-Dcom.sun.management.jmxremote.port=7091"
-    //jvmFlags += "-Dcom.sun.management.jmxremote.authenticate=false"
-    //jvmFlags += "-Dcom.sun.management.jmxremote.ssl=false"
-
-    // JAR behaviour //
-    slimJar = true
-    useEmbeddedPaths = false
 }
