@@ -57,3 +57,7 @@ jar {
     }
 }
 
+task copyDependencies(type: Copy) {
+    from configurations.compile
+    into "${project.buildDir}/deps"
+}
