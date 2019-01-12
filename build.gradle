@@ -7,25 +7,22 @@ buildscript {
         maven {
             url "https://plugins.gradle.org/m2/"
         }
+        maven { url "https://jitpack.io" }
     }
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.0'
         classpath "gradle.plugin.net.ossindex:ossindex-gradle-plugin:0.1.1"
         classpath "org.hidetake:gradle-ssh-plugin:2.0.0"
+        classpath "com.github.ev3dev-lang-java:gradle-plugin:1.5.2"
     }
 }
 
 version = '2.5.3'
-
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
-apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: "net.ossindex.audit"
-apply plugin: 'org.hidetake.ssh'
-
-apply from: './gradle/utility.gradle'
-apply from: './config.gradle'
+apply plugin: 'net.ossindex.audit'
+apply plugin: 'ev3dev-lang-java'
 
 // Project definitions
 
@@ -38,6 +35,9 @@ dependencies {
     compile("org.slf4j:slf4j-simple:1.7.25")
     compile("com.github.ev3dev-lang-java:ev3dev-lang-java:2.5.3")
 }
+
+apply plugin: 'ev3dev-lang-java'
+apply from: './config.gradle'
 
 compileJava.options.encoding = 'UTF-8'
 
@@ -52,11 +52,8 @@ jar {
     manifest {
         attributes("Implementation-Title": project.name,
                    "Implementation-Version": version,
-                   "Main-Class": project.mainClass,
-                   "Class-Path": project.getClassPath(true) )
+                   "Main-Class": brick.pref.mainClass,
+                   "Class-Path": brick.getClassPath(true) )
     }
 }
 
-apply from: './gradle/deploy.gradle'
-apply from: './gradle/ev3dev.gradle'
-apply from: './gradle/installer.gradle'

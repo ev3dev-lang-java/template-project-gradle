@@ -1,5 +1,0 @@
-#!/bin/sh
-
-cat ${splash}
-${command}
-exit \$?
