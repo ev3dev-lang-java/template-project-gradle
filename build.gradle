@@ -1,28 +1,15 @@
 //Gradle file library ev3dev-lang-java // Template project
 
-buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-        maven { url "https://jitpack.io" }
-    }
-    dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.0'
-        classpath "gradle.plugin.net.ossindex:ossindex-gradle-plugin:0.1.1"
-        classpath "org.hidetake:gradle-ssh-plugin:2.0.0"
-        classpath "com.github.ev3dev-lang-java:gradle-plugin:1.5.2"
-    }
+plugins {
+    id 'java'
+    id 'eclipse'
+    id 'idea'
+    id "net.ossindex.audit" version "0.4.5-beta"
+    id "com.github.johnrengelman.shadow" version "4.0.3"
+    id 'com.github.ev3dev-lang-java.gradle-plugin' version '1.6.0'
 }
 
 version = '2.5.3'
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
-apply plugin: 'net.ossindex.audit'
-apply plugin: 'ev3dev-lang-java'
 
 // Project definitions
 
@@ -36,7 +23,6 @@ dependencies {
     compile("com.github.ev3dev-lang-java:ev3dev-lang-java:2.5.3")
 }
 
-apply plugin: 'ev3dev-lang-java'
 apply from: './config.gradle'
 
 compileJava.options.encoding = 'UTF-8'
