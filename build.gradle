@@ -6,7 +6,7 @@ plugins {
     id 'idea'
     id "net.ossindex.audit" version "0.4.5-beta"
     id "com.github.johnrengelman.shadow" version "4.0.3"
-    id 'com.github.ev3dev-lang-java.gradle-plugin' version '1.6.5'
+    id 'com.github.ev3dev-lang-java.gradle-plugin' version '1.6.8'
 }
 
 version = '2.5.3'
@@ -19,8 +19,8 @@ repositories {
 }
 
 dependencies {
-    compile("org.slf4j:slf4j-simple:1.7.25")
-    compile("com.github.ev3dev-lang-java:ev3dev-lang-java:2.5.3")
+    implementation("org.slf4j:slf4j-simple:1.7.25")
+    implementation("com.github.ev3dev-lang-java:ev3dev-lang-java:2.5.3")
 }
 
 apply from: './config.gradle'
