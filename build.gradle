@@ -6,10 +6,10 @@ plugins {
     id 'idea'
     id "net.ossindex.audit" version "0.4.5-beta"
     id "com.github.johnrengelman.shadow" version "4.0.3"
-    id 'com.github.ev3dev-lang-java.gradle-plugin' version '1.6.8'
+    id 'com.github.ev3dev-lang-java.gradle-plugin' version '1.6.11'
 }
 
-version = '2.5.3'
+version = '2.6.0'
 
 // Project definitions
 
@@ -29,8 +29,8 @@ compileJava.options.encoding = 'UTF-8'
 
 //Compile
 compileJava {
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    sourceCompatibility = 11
+    targetCompatibility = 11
 }
 
 //Jar
@@ -42,4 +42,3 @@ jar {
                    "Class-Path": brick.getClassPath(true) )
     }
 }
-
