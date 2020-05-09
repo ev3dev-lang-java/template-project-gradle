@@ -35,10 +35,6 @@ The project includes some tasks to reduce the time to deploy on your robot.
 
 To start, change the `host`, `user` and `password` properties in `config.gradle`. Then, continue to the brick setup.
 
-## Brick setup
-
-Please see https://github.com/ev3dev-lang-java/gradle-plugin#whats-next .
-
 ## Configuration
 
 You can change the project configuration in `config.gradle`.
