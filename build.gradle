@@ -4,9 +4,9 @@ plugins {
     id 'java'
     id 'eclipse'
     id 'idea'
+    id 'org.hidetake.ssh' version '2.10.1'
     id "net.ossindex.audit" version "0.4.5-beta"
     id "com.github.johnrengelman.shadow" version "4.0.3"
-    id 'com.github.ev3dev-lang-java.gradle-plugin' version '2.0.0'
 }
 
 version = '2.6.0'
@@ -20,10 +20,8 @@ repositories {
 
 dependencies {
     implementation("org.slf4j:slf4j-simple:1.7.25")
-    implementation("com.github.ev3dev-lang-java:ev3dev-lang-java:2.5.3")
+    implementation("com.github.ev3dev-lang-java:ev3dev-lang-java:2.6.2-SNAPSHOT")
 }
-
-apply from: './config.gradle'
 
 compileJava.options.encoding = 'UTF-8'
 
@@ -35,10 +33,17 @@ compileJava {
 
 //Jar
 jar {
+    baseName = "${rootProject.name}"
     manifest {
-        attributes("Implementation-Title": project.name,
-                   "Implementation-Version": version,
-                   "Main-Class": brick.pref.mainClass,
-                   "Class-Path": brick.getClassPath(true) )
+        from file("${projectDir}/src/main/resources/META-INF/MANIFEST.MF")
     }
 }
+
+task fatJar {
+    doLast {
+    }
+}
+fatJar.dependsOn shadowJar
+
+apply from: './config.gradle'
+apply from: './gradle/deploy.gradle'

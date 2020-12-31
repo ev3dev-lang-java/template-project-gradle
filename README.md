@@ -33,21 +33,44 @@ an example ready to be deployed on your Robot using the `core` library from `EV3
 
 The project includes some tasks to reduce the time to deploy on your robot.
 
-To start, change the `brickHost`, `brickUser` and `brickPassword` properties in `config.gradle`. Then, continue to the brick setup.
+Review the IP of your Brick and update the file `./gradle/deploy.gradle`:
 
-## Brick setup
-
-Please see https://github.com/ev3dev-lang-java/gradle-plugin#whats-next .
+```
+remotes {
+    ev3dev {
+        host = '192.168.1.180'
+        user = 'robot'
+        password = 'maker'
+    }
+}
+```
 
 ## Configuration
 
 You can change the project configuration in `config.gradle`.
 
-Please see https://github.com/ev3dev-lang-java/gradle-plugin#all-configuration-options for a list of options.
+### EV3Dev-lang-java
+The tasks associated to deploy on your Robot are:
 
-## Gradle Tasks
+- testConnection (Test the connection with your Brick)
+- deploy (The project deliver a FatJar to your Brick)
+- remoteRun (Execute a Jar deployed on your Brick)
+- deployAndRun (Deploy & Execute from your Computer the program that you configured on the file: MANIFEST.MF)
+- ev3devInfo (Get technical information about your EV3 Brick)
+- removePreviousJar (Remove current jar remotely)
+- remoteBrickRun (If your program is going to use some EV3 Actuator like LCD, Buttons, use this task to execute the program)
+- remoteRun (Execute your jar remotely)
+- remoteRunClassVerbose (Execute your jar and show JVM info)
+- remoteProfilingRun (Execute your jar configured for Profiling activities)
+- deployAndBrickRun (Deploy & Execute your program with Brickrun)
+- deployAndProfilingRun  (Deploy & Execute your jar configured for Profiling activities)
+- pkillJava (Kill Java processes in your Brick)
 
-Please see https://github.com/ev3dev-lang-java/gradle-plugin#all-provided-gradle-tasks .
+You can use the Java IDE to launch the task or execute them from the terminal
+
+```
+./gradlew deployAndBrickRun
+```
 
 ## Javadocs
 
@@ -63,6 +86,6 @@ https://github.com/ev3dev-lang-java/examples
 
 ## Issues
 
-If you have any problem or doubt, use the main projet.
+If you have any problem or doubt, use the main project.
 
 https://github.com/ev3dev-lang-java/ev3dev-lang-java/issues
