@@ -33,7 +33,7 @@ an example ready to be deployed on your Robot using the `core` library from `EV3
 
 The project includes some tasks to reduce the time to deploy on your robot.
 
-Review the IP of your Brick and update the file `./gradle/deploy.gradle`:
+Review the IP of your Brick and update the file `./config.gradle`:
 
 ```
 remotes {
@@ -45,13 +45,8 @@ remotes {
 }
 ```
 
-To start, change the `host`, `user` and `password` properties in `config.gradle`. Then, continue to the brick setup.
-
-## Configuration
-
-You can change the project configuration in `config.gradle`.
-
 ### EV3Dev-lang-java
+
 The tasks associated to deploy on your Robot are:
 
 - testConnection (Test the connection with your Brick)
