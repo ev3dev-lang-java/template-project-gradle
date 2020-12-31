@@ -45,6 +45,8 @@ remotes {
 }
 ```
 
+To start, change the `host`, `user` and `password` properties in `config.gradle`. Then, continue to the brick setup.
+
 ## Configuration
 
 You can change the project configuration in `config.gradle`.
